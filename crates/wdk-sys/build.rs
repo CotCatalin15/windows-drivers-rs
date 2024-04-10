@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft Corporation
 // License: MIT OR Apache-2.0
-
 use std::{
     env,
     path::{Path, PathBuf},
@@ -62,6 +61,18 @@ fn generate_wdf(out_path: &Path, config: Config) -> Result<(), ConfigError> {
             .generate()
             .expect("Bindings should succeed to generate")
             .write_to_file(out_path.join("wdf.rs"))?,
+    )
+}
+
+fn generate_minifilter_bindings(out_path: &Path, config: Config) -> Result<(), ConfigError> {
+    Ok(
+        bindgen::Builder::wdk_default(vec!["src/fltmgr-input.h"], config)?
+            .allowlist_function("Flt.*") // Allowlist functions starting with 'Flt'
+            .allowlist_type("FLT_.*") // Allowlist types starting with 'FLT_'
+            .allowlist_var("FLT_.*") // Allowlist variables/constants starting with 'FLT_'
+            .generate()
+            .expect("Bindings for minifilter should succeed to generate")
+            .write_to_file(out_path.join("minifilter.rs"))?,
     )
 }
 
@@ -138,6 +149,7 @@ fn main() -> anyhow::Result<()> {
         generate_types(&out_path, config.clone())?;
         generate_ntddk(&out_path, config.clone())?;
         generate_wdf(&out_path, config.clone())?;
+        generate_minifilter_bindings(&out_path, config.clone())?;
     }
 
     config.configure_library_build()?;

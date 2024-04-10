@@ -28,6 +28,7 @@ mod types;
 
 pub use crate::{constants::*, types::*};
 
+pub mod fltmgr;
 pub mod macros;
 pub mod ntddk;
 pub mod wdf;
