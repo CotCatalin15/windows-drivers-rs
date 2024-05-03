@@ -70,6 +70,7 @@ fn generate_minifilter_bindings(out_path: &Path, config: Config) -> Result<(), C
             .allowlist_function("Flt.*") // Allowlist functions starting with 'Flt'
             .allowlist_type("FLT_.*") // Allowlist types starting with 'FLT_'
             .allowlist_var("FLT_.*") // Allowlist variables/constants starting with 'FLT_'
+            .allowlist_var("IRP_MJ_.*") // Allowlist IRP major operation constants
             .generate()
             .expect("Bindings for minifilter should succeed to generate")
             .write_to_file(out_path.join("minifilter.rs"))?,

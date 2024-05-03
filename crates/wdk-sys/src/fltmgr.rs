@@ -11,3 +11,5 @@
 use crate::types::*;
 
 include!(concat!(env!("OUT_DIR"), "/minifilter.rs"));
+
+const IRP_MJ_OPERATION_END: u8 = 0x80;

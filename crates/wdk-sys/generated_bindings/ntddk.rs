@@ -3296,12 +3296,6 @@ extern "C" {
     pub fn ExFlushLookasideListEx(Lookaside: PLOOKASIDE_LIST_EX);
 }
 extern "C" {
-    pub fn ExAllocateFromLookasideListEx(Lookaside: PLOOKASIDE_LIST_EX) -> PVOID;
-}
-extern "C" {
-    pub fn ExFreeToLookasideListEx(Lookaside: PLOOKASIDE_LIST_EX, Entry: PVOID);
-}
-extern "C" {
     pub fn ExInitializeNPagedLookasideList(
         Lookaside: PNPAGED_LOOKASIDE_LIST,
         Allocate: PALLOCATE_FUNCTION,
@@ -3316,12 +3310,6 @@ extern "C" {
     pub fn ExDeleteNPagedLookasideList(Lookaside: PNPAGED_LOOKASIDE_LIST);
 }
 extern "C" {
-    pub fn ExAllocateFromNPagedLookasideList(Lookaside: PNPAGED_LOOKASIDE_LIST) -> PVOID;
-}
-extern "C" {
-    pub fn ExFreeToNPagedLookasideList(Lookaside: PNPAGED_LOOKASIDE_LIST, Entry: PVOID);
-}
-extern "C" {
     pub fn ExInitializePagedLookasideList(
         Lookaside: PPAGED_LOOKASIDE_LIST,
         Allocate: PALLOCATE_FUNCTION,
@@ -3334,12 +3322,6 @@ extern "C" {
 }
 extern "C" {
     pub fn ExDeletePagedLookasideList(Lookaside: PPAGED_LOOKASIDE_LIST);
-}
-extern "C" {
-    pub fn ExAllocateFromPagedLookasideList(Lookaside: PPAGED_LOOKASIDE_LIST) -> PVOID;
-}
-extern "C" {
-    pub fn ExFreeToPagedLookasideList(Lookaside: PPAGED_LOOKASIDE_LIST, Entry: PVOID);
 }
 extern "C" {
     pub fn ProbeForRead(
@@ -3638,7 +3620,7 @@ extern "C" {
     #[must_use]
     pub fn ExInitializeDeviceAts(
         PhysicalDeviceObject: *mut [u8; 0usize],
-        Flags: ULONG,
+        SvmOptOut: BOOLEAN,
     ) -> NTSTATUS;
 }
 extern "C" {
@@ -7501,9 +7483,6 @@ extern "C" {
     pub fn _ReturnAddress() -> *mut ::core::ffi::c_void;
 }
 extern "C" {
-    pub fn RtlGetCallersAddress(CallersAddress: *mut PVOID, CallersCaller: *mut PVOID);
-}
-extern "C" {
     pub fn RtlWalkFrameChain(Callers: *mut PVOID, Count: ULONG, Flags: ULONG) -> ULONG;
 }
 extern "C" {
@@ -7571,10 +7550,7 @@ extern "C" {
     ) -> NTSTATUS;
 }
 extern "C" {
-    pub fn RtlMapGenericMask(
-        AccessMask: PACCESS_MASK,
-        GenericMapping: *const GENERIC_MAPPING,
-    );
+    pub fn RtlMapGenericMask(AccessMask: PACCESS_MASK, GenericMapping: PGENERIC_MAPPING);
 }
 extern "C" {
     #[must_use]
@@ -8551,17 +8527,6 @@ extern "C" {
     pub fn IoGetOplockKeyContextEx(FileObject: PFILE_OBJECT) -> POPLOCK_KEY_CONTEXT;
 }
 extern "C" {
-    pub fn IoGetShadowFileInformation(FileObject: PFILE_OBJECT) -> PIO_FOEXT_SHADOW_FILE;
-}
-extern "C" {
-    #[must_use]
-    pub fn IoSetShadowFileInformation(
-        FileObject: PFILE_OBJECT,
-        BackingFileObject: PFILE_OBJECT,
-        BackingFltInstance: PVOID,
-    ) -> NTSTATUS;
-}
-extern "C" {
     #[must_use]
     pub fn IoCreateFileEx(
         FileHandle: PHANDLE,
@@ -9069,26 +9034,6 @@ extern "C" {
 }
 extern "C" {
     pub fn WheaIsCriticalState() -> BOOLEAN;
-}
-extern "C" {
-    pub fn WheaSignalHandlerOverride(
-        SourceType: WHEA_ERROR_SOURCE_TYPE,
-        Context: UINT_PTR,
-    ) -> BOOLEAN;
-}
-extern "C" {
-    pub fn WheaUnregisterErrorSourceOverride(
-        Type: WHEA_ERROR_SOURCE_TYPE,
-        OverrideErrorSourceId: ULONG32,
-    );
-}
-extern "C" {
-    #[must_use]
-    pub fn WheaRegisterErrorSourceOverride(
-        OverrideSettings: WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS,
-        OverrideConfig: PWHEA_ERROR_SOURCE_CONFIGURATION,
-        OverrideCallback: WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK,
-    ) -> NTSTATUS;
 }
 extern "C" {
     pub fn WheaHighIrqlLogSelEventHandlerRegister(
@@ -10514,21 +10459,6 @@ extern "C" {
 }
 extern "C" {
     #[must_use]
-    pub fn NtCopyFileChunk(
-        SourceHandle: HANDLE,
-        DestHandle: HANDLE,
-        Event: HANDLE,
-        IoStatusBlock: PIO_STATUS_BLOCK,
-        Length: ULONG,
-        SourceOffset: PLARGE_INTEGER,
-        DestOffset: PLARGE_INTEGER,
-        SourceKey: PULONG,
-        DestKey: PULONG,
-        Flags: ULONG,
-    ) -> NTSTATUS;
-}
-extern "C" {
-    #[must_use]
     pub fn NtQueryObject(
         Handle: HANDLE,
         ObjectInformationClass: OBJECT_INFORMATION_CLASS,
@@ -11364,12 +11294,6 @@ extern "C" {
     ) -> NTSTATUS;
 }
 extern "C" {
-    pub fn IoCheckFileObjectOpenedAsCopyDestination(FileObject: PFILE_OBJECT) -> BOOLEAN;
-}
-extern "C" {
-    pub fn IoCheckFileObjectOpenedAsCopySource(FileObject: PFILE_OBJECT) -> BOOLEAN;
-}
-extern "C" {
     #[must_use]
     pub fn IoCheckFunctionAccess(
         GrantedAccess: ACCESS_MASK,
@@ -11652,13 +11576,6 @@ extern "C" {
 }
 extern "C" {
     pub fn IoIrpHasFsTrackOffsetExtensionType(Irp: PIRP) -> BOOLEAN;
-}
-extern "C" {
-    #[must_use]
-    pub fn IoGetCopyInformationExtension(
-        Irp: PIRP,
-        CopyInformation: PCOPY_INFORMATION,
-    ) -> NTSTATUS;
 }
 extern "C" {
     #[must_use]
@@ -12890,14 +12807,6 @@ extern "C" {
     ) -> NTSTATUS;
 }
 extern "C" {
-    #[must_use]
-    pub fn FsRtlCheckOplockForFsFilterCallback(
-        Oplock: POPLOCK,
-        CallbackData: PVOID,
-        Flags: ULONG,
-    ) -> NTSTATUS;
-}
-extern "C" {
     pub fn FsRtlGetCurrentProcessLoaderList() -> PLIST_ENTRY;
 }
 extern "C" {
@@ -13289,16 +13198,6 @@ extern "C" {
         FileSizes: PCC_FILE_SIZES,
         PinAccess: BOOLEAN,
         Callbacks: PCACHE_MANAGER_CALLBACKS,
-        LazyWriteContext: PVOID,
-        Flags: ULONG,
-    );
-}
-extern "C" {
-    pub fn CcInitializeCacheMapEx2(
-        FileObject: PFILE_OBJECT,
-        FileSizes: PCC_FILE_SIZES,
-        PinAccess: BOOLEAN,
-        AsyncCallbacks: PCACHE_MANAGER_CALLBACKS_EX,
         LazyWriteContext: PVOID,
         Flags: ULONG,
     );
