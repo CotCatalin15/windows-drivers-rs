@@ -516,6 +516,7 @@ impl Config {
                 println!("cargo:rustc-link-lib=ntoskrnl");
                 println!("cargo:rustc-link-lib=hal");
                 println!("cargo:rustc-link-lib=wmilib");
+                println!("cargo:rustc-link-lib=FltMgr");
             }
             DriverConfig::KMDF(_) => {
                 // Emit KMDF-specific libraries to link to
