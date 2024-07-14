@@ -156,6 +156,7 @@ pub const FLT_PUSH_LOCK_DISABLE_AUTO_BOOST: u32 = 2;
 pub const FLT_PUSH_LOCK_VALID_FLAGS: u32 = 3;
 pub const FLT_MAX_TRANSACTION_NOTIFICATIONS: u32 = 1073741839;
 pub type wchar_t = ::core::ffi::c_ushort;
+pub type LONG_PTR = ::core::ffi::c_longlong;
 pub type ULONG_PTR = ::core::ffi::c_ulonglong;
 pub type PULONG_PTR = *mut ::core::ffi::c_ulonglong;
 pub type SIZE_T = ULONG_PTR;
@@ -1088,13 +1089,20 @@ pub mod _FILE_INFORMATION_CLASS {
     pub const FileStorageReserveIdInformation: Type = 74;
     pub const FileCaseSensitiveInformationForceAccessCheck: Type = 75;
     pub const FileKnownFolderInformation: Type = 76;
-    pub const FileMaximumInformation: Type = 77;
+    pub const FileStatBasicInformation: Type = 77;
+    pub const FileId64ExtdDirectoryInformation: Type = 78;
+    pub const FileId64ExtdBothDirectoryInformation: Type = 79;
+    pub const FileIdAllExtdDirectoryInformation: Type = 80;
+    pub const FileIdAllExtdBothDirectoryInformation: Type = 81;
+    pub const FileMaximumInformation: Type = 82;
 }
 pub use self::_FILE_INFORMATION_CLASS::Type as FILE_INFORMATION_CLASS;
 pub mod _DIRECTORY_NOTIFY_INFORMATION_CLASS {
     pub type Type = ::core::ffi::c_int;
     pub const DirectoryNotifyInformation: Type = 1;
     pub const DirectoryNotifyExtendedInformation: Type = 2;
+    pub const DirectoryNotifyFullInformation: Type = 3;
+    pub const DirectoryNotifyMaximumInformation: Type = 4;
 }
 pub use self::_DIRECTORY_NOTIFY_INFORMATION_CLASS::Type as DIRECTORY_NOTIFY_INFORMATION_CLASS;
 #[repr(C)]
@@ -1397,7 +1405,8 @@ pub mod _FSINFOCLASS {
     pub const FileFsDataCopyInformation: Type = 12;
     pub const FileFsMetadataSizeInformation: Type = 13;
     pub const FileFsFullSizeInformationEx: Type = 14;
-    pub const FileFsMaximumInformation: Type = 15;
+    pub const FileFsGuidInformation: Type = 15;
+    pub const FileFsMaximumInformation: Type = 16;
 }
 pub use self::_FSINFOCLASS::Type as FS_INFORMATION_CLASS;
 pub mod _INTERFACE_TYPE {
@@ -4860,7 +4869,7 @@ pub type KPROCESSOR_MODE = CCHAR;
 #[derive(Debug, Copy, Clone)]
 pub struct _KAPC {
     pub Type: UCHAR,
-    pub SpareByte0: UCHAR,
+    pub AllFlags: UCHAR,
     pub Size: UCHAR,
     pub SpareByte1: UCHAR,
     pub SpareLong0: ULONG,
@@ -4894,9 +4903,9 @@ fn bindgen_test_layout__KAPC() {
         concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(Type)),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).SpareByte0) as usize - ptr as usize },
+        unsafe { ::core::ptr::addr_of!((*ptr).AllFlags) as usize - ptr as usize },
         1usize,
-        concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(SpareByte0)),
+        concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(AllFlags)),
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).Size) as usize - ptr as usize },
@@ -10643,6 +10652,7 @@ pub type PSECTION_OBJECT_POINTERS = *mut SECTION_OBJECT_POINTERS;
 pub struct _IO_COMPLETION_CONTEXT {
     pub Port: PVOID,
     pub Key: PVOID,
+    pub UsageCount: LONG_PTR,
 }
 #[test]
 fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
@@ -10650,7 +10660,7 @@ fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_IO_COMPLETION_CONTEXT>(),
-        16usize,
+        24usize,
         concat!("Size of: ", stringify!(_IO_COMPLETION_CONTEXT)),
     );
     assert_eq!(
@@ -10676,6 +10686,16 @@ fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
             stringify!(_IO_COMPLETION_CONTEXT),
             "::",
             stringify!(Key),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).UsageCount) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_COMPLETION_CONTEXT),
+            "::",
+            stringify!(UsageCount),
         ),
     );
 }
@@ -14164,6 +14184,7 @@ impl Default for _IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_19 {
 pub struct _IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20 {
     pub Vpb: PVPB,
     pub DeviceObject: PDEVICE_OBJECT,
+    pub OutputBufferLength: ULONG,
 }
 #[test]
 fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
@@ -14173,7 +14194,7 @@ fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20>(),
-        16usize,
+        24usize,
         concat!("Size of: ", stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20)),
     );
     assert_eq!(
@@ -14202,6 +14223,18 @@ fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
             stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20),
             "::",
             stringify!(DeviceObject),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).OutputBufferLength) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20),
+            "::",
+            stringify!(OutputBufferLength),
         ),
     );
 }
@@ -16685,6 +16718,61 @@ impl Default for _IO_PRIORITY_INFO {
     }
 }
 pub type PIO_PRIORITY_INFO = *mut _IO_PRIORITY_INFO;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _COPY_INFORMATION {
+    pub SourceFileObject: PFILE_OBJECT,
+    pub SourceFileOffset: LONGLONG,
+}
+#[test]
+fn bindgen_test_layout__COPY_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_COPY_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_COPY_INFORMATION>(),
+        16usize,
+        concat!("Size of: ", stringify!(_COPY_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_COPY_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_COPY_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SourceFileObject) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_COPY_INFORMATION),
+            "::",
+            stringify!(SourceFileObject),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SourceFileOffset) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_COPY_INFORMATION),
+            "::",
+            stringify!(SourceFileOffset),
+        ),
+    );
+}
+impl Default for _COPY_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PCOPY_INFORMATION = *mut _COPY_INFORMATION;
 pub type POPLOCK = *mut PVOID;
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -26020,6 +26108,13 @@ extern "C" {
         SourceData: PFLT_CALLBACK_DATA,
         TargetData: PFLT_CALLBACK_DATA,
         Flags: ULONG,
+    ) -> NTSTATUS;
+}
+extern "C" {
+    #[must_use]
+    pub fn FltGetCopyInformationFromCallbackData(
+        Data: PFLT_CALLBACK_DATA,
+        CopyInformation: PCOPY_INFORMATION,
     ) -> NTSTATUS;
 }
 extern "C" {

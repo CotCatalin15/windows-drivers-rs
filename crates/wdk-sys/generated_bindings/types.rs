@@ -5071,6 +5071,71 @@ impl Default for _SE_ADT_PARAMETER_ARRAY_EX {
 pub type SE_ADT_PARAMETER_ARRAY_EX = _SE_ADT_PARAMETER_ARRAY_EX;
 pub type PSE_ADT_PARAMETER_ARRAY_EX = *mut _SE_ADT_PARAMETER_ARRAY_EX;
 #[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _EXTENDED_CREATE_INFORMATION {
+    pub ExtendedCreateFlags: LONGLONG,
+    pub EaBuffer: PVOID,
+    pub EaLength: ULONG,
+}
+#[test]
+fn bindgen_test_layout__EXTENDED_CREATE_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_EXTENDED_CREATE_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_EXTENDED_CREATE_INFORMATION>(),
+        24usize,
+        concat!("Size of: ", stringify!(_EXTENDED_CREATE_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_EXTENDED_CREATE_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_EXTENDED_CREATE_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).ExtendedCreateFlags) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EXTENDED_CREATE_INFORMATION),
+            "::",
+            stringify!(ExtendedCreateFlags),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaBuffer) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EXTENDED_CREATE_INFORMATION),
+            "::",
+            stringify!(EaBuffer),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaLength) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EXTENDED_CREATE_INFORMATION),
+            "::",
+            stringify!(EaLength),
+        ),
+    );
+}
+impl Default for _EXTENDED_CREATE_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type EXTENDED_CREATE_INFORMATION = _EXTENDED_CREATE_INFORMATION;
+pub type PEXTENDED_CREATE_INFORMATION = *mut _EXTENDED_CREATE_INFORMATION;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _IO_STATUS_BLOCK {
     pub __bindgen_anon_1: _IO_STATUS_BLOCK__bindgen_ty_1,
@@ -5362,7 +5427,12 @@ pub mod _FILE_INFORMATION_CLASS {
     pub const FileStorageReserveIdInformation: Type = 74;
     pub const FileCaseSensitiveInformationForceAccessCheck: Type = 75;
     pub const FileKnownFolderInformation: Type = 76;
-    pub const FileMaximumInformation: Type = 77;
+    pub const FileStatBasicInformation: Type = 77;
+    pub const FileId64ExtdDirectoryInformation: Type = 78;
+    pub const FileId64ExtdBothDirectoryInformation: Type = 79;
+    pub const FileIdAllExtdDirectoryInformation: Type = 80;
+    pub const FileIdAllExtdBothDirectoryInformation: Type = 81;
+    pub const FileMaximumInformation: Type = 82;
 }
 pub use self::_FILE_INFORMATION_CLASS::Type as FILE_INFORMATION_CLASS;
 pub type PFILE_INFORMATION_CLASS = *mut _FILE_INFORMATION_CLASS::Type;
@@ -5370,6 +5440,8 @@ pub mod _DIRECTORY_NOTIFY_INFORMATION_CLASS {
     pub type Type = ::core::ffi::c_int;
     pub const DirectoryNotifyInformation: Type = 1;
     pub const DirectoryNotifyExtendedInformation: Type = 2;
+    pub const DirectoryNotifyFullInformation: Type = 3;
+    pub const DirectoryNotifyMaximumInformation: Type = 4;
 }
 pub use self::_DIRECTORY_NOTIFY_INFORMATION_CLASS::Type as DIRECTORY_NOTIFY_INFORMATION_CLASS;
 pub type PDIRECTORY_NOTIFY_INFORMATION_CLASS = *mut _DIRECTORY_NOTIFY_INFORMATION_CLASS::Type;
@@ -6507,7 +6579,8 @@ pub mod _FSINFOCLASS {
     pub const FileFsDataCopyInformation: Type = 12;
     pub const FileFsMetadataSizeInformation: Type = 13;
     pub const FileFsFullSizeInformationEx: Type = 14;
-    pub const FileFsMaximumInformation: Type = 15;
+    pub const FileFsGuidInformation: Type = 15;
+    pub const FileFsMaximumInformation: Type = 16;
 }
 pub use self::_FSINFOCLASS::Type as FS_INFORMATION_CLASS;
 pub type PFS_INFORMATION_CLASS = *mut _FSINFOCLASS::Type;
@@ -9323,7 +9396,8 @@ pub mod POWER_INFORMATION_LEVEL {
     pub const UpdateBlackBoxRecorder: Type = 94;
     pub const SessionAllowExternalDmaDevices: Type = 95;
     pub const SendSuspendResumeNotification: Type = 96;
-    pub const PowerInformationLevelMaximum: Type = 97;
+    pub const BlackBoxRecorderDirectAccessBuffer: Type = 97;
+    pub const PowerInformationLevelMaximum: Type = 98;
 }
 pub mod POWER_USER_PRESENCE_TYPE {
     pub type Type = ::core::ffi::c_int;
@@ -19047,6 +19121,7 @@ pub type PFN_NT_ROLLBACK_TRANSACTION = ::core::option::Option<
     unsafe extern "C" fn(TransactionHandle: HANDLE, Wait: BOOLEAN) -> NTSTATUS,
 >;
 pub use self::_POOL_TYPE::Type as POOL_TYPE;
+pub type POOL_FLAGS = ULONG64;
 pub type ALLOCATE_FUNCTION = ::core::option::Option<
     unsafe extern "C" fn(PoolType: POOL_TYPE, NumberOfBytes: SIZE_T, Tag: ULONG) -> PVOID,
 >;
@@ -19991,7 +20066,7 @@ pub type PKSYNCHRONIZE_ROUTINE = KSYNCHRONIZE_ROUTINE;
 #[derive(Debug, Copy, Clone)]
 pub struct _KAPC {
     pub Type: UCHAR,
-    pub SpareByte0: UCHAR,
+    pub AllFlags: UCHAR,
     pub Size: UCHAR,
     pub SpareByte1: UCHAR,
     pub SpareLong0: ULONG,
@@ -20025,9 +20100,9 @@ fn bindgen_test_layout__KAPC() {
         concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(Type)),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).SpareByte0) as usize - ptr as usize },
+        unsafe { ::core::ptr::addr_of!((*ptr).AllFlags) as usize - ptr as usize },
         1usize,
-        concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(SpareByte0)),
+        concat!("Offset of field: ", stringify!(_KAPC), "::", stringify!(AllFlags)),
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).Size) as usize - ptr as usize },
@@ -24387,7 +24462,8 @@ pub mod _KWAIT_REASON {
     pub const WrDeferredPreempt: Type = 38;
     pub const WrPhysicalFault: Type = 39;
     pub const WrIoRing: Type = 40;
-    pub const MaximumWaitReason: Type = 41;
+    pub const WrMdlCache: Type = 41;
+    pub const MaximumWaitReason: Type = 42;
 }
 pub use self::_KWAIT_REASON::Type as KWAIT_REASON;
 #[repr(C)]
@@ -26748,7 +26824,6 @@ impl Default for _POOL_EXTENDED_PARAMETER {
 pub type POOL_EXTENDED_PARAMETER = _POOL_EXTENDED_PARAMETER;
 pub type PPOOL_EXTENDED_PARAMETER = *mut _POOL_EXTENDED_PARAMETER;
 pub type PCPOOL_EXTENDED_PARAMETER = *const POOL_EXTENDED_PARAMETER;
-pub type POOL_FLAGS = ULONG64;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct _POOL_CREATE_EXTENDED_PARAMS {
@@ -33859,6 +33934,7 @@ pub type PSECTION_OBJECT_POINTERS = *mut SECTION_OBJECT_POINTERS;
 pub struct _IO_COMPLETION_CONTEXT {
     pub Port: PVOID,
     pub Key: PVOID,
+    pub UsageCount: LONG_PTR,
 }
 #[test]
 fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
@@ -33866,7 +33942,7 @@ fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_IO_COMPLETION_CONTEXT>(),
-        16usize,
+        24usize,
         concat!("Size of: ", stringify!(_IO_COMPLETION_CONTEXT)),
     );
     assert_eq!(
@@ -33892,6 +33968,16 @@ fn bindgen_test_layout__IO_COMPLETION_CONTEXT() {
             stringify!(_IO_COMPLETION_CONTEXT),
             "::",
             stringify!(Key),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).UsageCount) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_COMPLETION_CONTEXT),
+            "::",
+            stringify!(UsageCount),
         ),
     );
 }
@@ -37442,6 +37528,7 @@ impl Default for _IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_19 {
 pub struct _IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20 {
     pub Vpb: PVPB,
     pub DeviceObject: PDEVICE_OBJECT,
+    pub OutputBufferLength: ULONG,
 }
 #[test]
 fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
@@ -37451,7 +37538,7 @@ fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20>(),
-        16usize,
+        24usize,
         concat!("Size of: ", stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20)),
     );
     assert_eq!(
@@ -37480,6 +37567,18 @@ fn bindgen_test_layout__IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20() {
             stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20),
             "::",
             stringify!(DeviceObject),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).OutputBufferLength) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_STACK_LOCATION__bindgen_ty_1__bindgen_ty_20),
+            "::",
+            stringify!(OutputBufferLength),
         ),
     );
 }
@@ -47088,7 +47187,7 @@ impl Default for _FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS {
 }
 pub type FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS = _FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS;
 pub type PFUNCTION_LEVEL_DEVICE_RESET_PARAMETERS = *mut _FUNCTION_LEVEL_DEVICE_RESET_PARAMETERS;
-pub type PDEVICE_RESET_HANDLER = ::core::option::Option<
+pub type DEVICE_RESET_HANDLER = ::core::option::Option<
     unsafe extern "C" fn(
         InterfaceContext: PVOID,
         ResetType: DEVICE_RESET_TYPE,
@@ -47096,6 +47195,7 @@ pub type PDEVICE_RESET_HANDLER = ::core::option::Option<
         ResetParameters: PVOID,
     ) -> NTSTATUS,
 >;
+pub type PDEVICE_RESET_HANDLER = DEVICE_RESET_HANDLER;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DEVICE_BUS_SPECIFIC_RESET_INFO {
@@ -47150,30 +47250,302 @@ impl Default for _DEVICE_BUS_SPECIFIC_RESET_INFO {
 }
 pub type DEVICE_BUS_SPECIFIC_RESET_INFO = _DEVICE_BUS_SPECIFIC_RESET_INFO;
 pub type PDEVICE_BUS_SPECIFIC_RESET_INFO = *mut _DEVICE_BUS_SPECIFIC_RESET_INFO;
-pub type PDEVICE_QUERY_BUS_SPECIFIC_RESET_HANDLER = ::core::option::Option<
+pub type DEVICE_QUERY_BUS_SPECIFIC_RESET_HANDLER = ::core::option::Option<
     unsafe extern "C" fn(
         InterfaceContext: PVOID,
         ResetInfoCount: PULONG,
         ResetInfoSupported: PDEVICE_BUS_SPECIFIC_RESET_INFO,
     ) -> NTSTATUS,
 >;
-pub type PDEVICE_BUS_SPECIFIC_RESET_HANDLER = ::core::option::Option<
+pub type PDEVICE_QUERY_BUS_SPECIFIC_RESET_HANDLER = DEVICE_QUERY_BUS_SPECIFIC_RESET_HANDLER;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _BUS_SPECIFIC_RESET_FLAGS {
+    pub u: _BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1,
+    pub AsUlonglong: ULONGLONG,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1 {
+    pub _bitfield_align_1: [u64; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+}
+#[test]
+fn bindgen_test_layout__BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<_BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(_BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1)),
+    );
+}
+impl _BUS_SPECIFIC_RESET_FLAGS__bindgen_ty_1 {
+    #[inline]
+    pub fn KeepStackReset(&self) -> ULONGLONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_KeepStackReset(&mut self, val: ULONGLONG) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn Reserved(&self) -> ULONGLONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 63u8) as u64) }
+    }
+    #[inline]
+    pub fn set_Reserved(&mut self, val: ULONGLONG) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 63u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        KeepStackReset: ULONGLONG,
+        Reserved: ULONGLONG,
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let KeepStackReset: u64 = unsafe {
+                        ::core::mem::transmute(KeepStackReset)
+                    };
+                    KeepStackReset as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                63u8,
+                {
+                    let Reserved: u64 = unsafe { ::core::mem::transmute(Reserved) };
+                    Reserved as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__BUS_SPECIFIC_RESET_FLAGS() {
+    const UNINIT: ::core::mem::MaybeUninit<_BUS_SPECIFIC_RESET_FLAGS> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_BUS_SPECIFIC_RESET_FLAGS>(),
+        8usize,
+        concat!("Size of: ", stringify!(_BUS_SPECIFIC_RESET_FLAGS)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_BUS_SPECIFIC_RESET_FLAGS>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_BUS_SPECIFIC_RESET_FLAGS)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_BUS_SPECIFIC_RESET_FLAGS),
+            "::",
+            stringify!(u),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AsUlonglong) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_BUS_SPECIFIC_RESET_FLAGS),
+            "::",
+            stringify!(AsUlonglong),
+        ),
+    );
+}
+impl Default for _BUS_SPECIFIC_RESET_FLAGS {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type BUS_SPECIFIC_RESET_FLAGS = _BUS_SPECIFIC_RESET_FLAGS;
+pub type PBUS_SPECIFIC_RESET_FLAGS = *mut _BUS_SPECIFIC_RESET_FLAGS;
+pub type DEVICE_BUS_SPECIFIC_RESET_HANDLER = ::core::option::Option<
     unsafe extern "C" fn(
         InterfaceContext: PVOID,
         BusType: *const GUID,
         ResetTypeSelected: DEVICE_BUS_SPECIFIC_RESET_TYPE,
-        Flags: ULONGLONG,
+        Flags: PBUS_SPECIFIC_RESET_FLAGS,
         ResetParameters: PVOID,
     ) -> NTSTATUS,
 >;
-pub type PGET_DEVICE_RESET_STATUS = ::core::option::Option<
+pub type PDEVICE_BUS_SPECIFIC_RESET_HANDLER = DEVICE_BUS_SPECIFIC_RESET_HANDLER;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _DEVICE_RESET_STATUS_FLAGS {
+    pub u: _DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1,
+    pub AsUlonglong: ULONGLONG,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1 {
+    pub _bitfield_align_1: [u64; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 8usize]>,
+}
+#[test]
+fn bindgen_test_layout__DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<_DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(_DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1)),
+    );
+}
+impl _DEVICE_RESET_STATUS_FLAGS__bindgen_ty_1 {
+    #[inline]
+    pub fn KeepStackReset(&self) -> ULONGLONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_KeepStackReset(&mut self, val: ULONGLONG) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn RecoveringFromBusError(&self) -> ULONGLONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 1u8) as u64) }
+    }
+    #[inline]
+    pub fn set_RecoveringFromBusError(&mut self, val: ULONGLONG) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn Reserved(&self) -> ULONGLONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 62u8) as u64) }
+    }
+    #[inline]
+    pub fn set_Reserved(&mut self, val: ULONGLONG) {
+        unsafe {
+            let val: u64 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 62u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        KeepStackReset: ULONGLONG,
+        RecoveringFromBusError: ULONGLONG,
+        Reserved: ULONGLONG,
+    ) -> __BindgenBitfieldUnit<[u8; 8usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 8usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let KeepStackReset: u64 = unsafe {
+                        ::core::mem::transmute(KeepStackReset)
+                    };
+                    KeepStackReset as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                1u8,
+                {
+                    let RecoveringFromBusError: u64 = unsafe {
+                        ::core::mem::transmute(RecoveringFromBusError)
+                    };
+                    RecoveringFromBusError as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                2usize,
+                62u8,
+                {
+                    let Reserved: u64 = unsafe { ::core::mem::transmute(Reserved) };
+                    Reserved as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__DEVICE_RESET_STATUS_FLAGS() {
+    const UNINIT: ::core::mem::MaybeUninit<_DEVICE_RESET_STATUS_FLAGS> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_DEVICE_RESET_STATUS_FLAGS>(),
+        8usize,
+        concat!("Size of: ", stringify!(_DEVICE_RESET_STATUS_FLAGS)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_DEVICE_RESET_STATUS_FLAGS>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_DEVICE_RESET_STATUS_FLAGS)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).u) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DEVICE_RESET_STATUS_FLAGS),
+            "::",
+            stringify!(u),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AsUlonglong) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DEVICE_RESET_STATUS_FLAGS),
+            "::",
+            stringify!(AsUlonglong),
+        ),
+    );
+}
+impl Default for _DEVICE_RESET_STATUS_FLAGS {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type DEVICE_RESET_STATUS_FLAGS = _DEVICE_RESET_STATUS_FLAGS;
+pub type PDEVICE_RESET_STATUS_FLAGS = *mut _DEVICE_RESET_STATUS_FLAGS;
+pub type GET_DEVICE_RESET_STATUS = ::core::option::Option<
     unsafe extern "C" fn(
         InterfaceContext: PVOID,
         IsResetting: PBOOLEAN,
         ResetTypeSelected: PDEVICE_BUS_SPECIFIC_RESET_TYPE,
-        Flags: PULONGLONG,
+        Flags: PDEVICE_RESET_STATUS_FLAGS,
     ) -> NTSTATUS,
 >;
+pub type PGET_DEVICE_RESET_STATUS = GET_DEVICE_RESET_STATUS;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct _DEVICE_RESET_INTERFACE_STANDARD {
@@ -47820,6 +48192,71 @@ pub type DMA_ADAPTER_INFO_V1 = _DMA_ADAPTER_INFO_V1;
 pub type PDMA_ADAPTER_INFO_V1 = *mut _DMA_ADAPTER_INFO_V1;
 #[repr(C)]
 #[derive(Copy, Clone)]
+pub struct _DMA_ADAPTER_INFO_CRASHDUMP {
+    pub DeviceDescription: DEVICE_DESCRIPTION,
+    pub DeviceIdSize: SIZE_T,
+    pub DeviceId: PVOID,
+}
+#[test]
+fn bindgen_test_layout__DMA_ADAPTER_INFO_CRASHDUMP() {
+    const UNINIT: ::core::mem::MaybeUninit<_DMA_ADAPTER_INFO_CRASHDUMP> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_DMA_ADAPTER_INFO_CRASHDUMP>(),
+        80usize,
+        concat!("Size of: ", stringify!(_DMA_ADAPTER_INFO_CRASHDUMP)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_DMA_ADAPTER_INFO_CRASHDUMP>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_DMA_ADAPTER_INFO_CRASHDUMP)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DeviceDescription) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_ADAPTER_INFO_CRASHDUMP),
+            "::",
+            stringify!(DeviceDescription),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeviceIdSize) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_ADAPTER_INFO_CRASHDUMP),
+            "::",
+            stringify!(DeviceIdSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeviceId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_ADAPTER_INFO_CRASHDUMP),
+            "::",
+            stringify!(DeviceId),
+        ),
+    );
+}
+impl Default for _DMA_ADAPTER_INFO_CRASHDUMP {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type DMA_ADAPTER_INFO_CRASHDUMP = _DMA_ADAPTER_INFO_CRASHDUMP;
+pub type PDMA_ADAPTER_INFO_CRASHDUMP = *mut _DMA_ADAPTER_INFO_CRASHDUMP;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct _DMA_ADAPTER_INFO {
     pub Version: ULONG,
     pub __bindgen_anon_1: _DMA_ADAPTER_INFO__bindgen_ty_1,
@@ -47828,6 +48265,7 @@ pub struct _DMA_ADAPTER_INFO {
 #[derive(Copy, Clone)]
 pub union _DMA_ADAPTER_INFO__bindgen_ty_1 {
     pub V1: DMA_ADAPTER_INFO_V1,
+    pub Crashdump: DMA_ADAPTER_INFO_CRASHDUMP,
 }
 #[test]
 fn bindgen_test_layout__DMA_ADAPTER_INFO__bindgen_ty_1() {
@@ -47835,12 +48273,12 @@ fn bindgen_test_layout__DMA_ADAPTER_INFO__bindgen_ty_1() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_DMA_ADAPTER_INFO__bindgen_ty_1>(),
-        20usize,
+        80usize,
         concat!("Size of: ", stringify!(_DMA_ADAPTER_INFO__bindgen_ty_1)),
     );
     assert_eq!(
         ::core::mem::align_of::<_DMA_ADAPTER_INFO__bindgen_ty_1>(),
-        4usize,
+        8usize,
         concat!("Alignment of ", stringify!(_DMA_ADAPTER_INFO__bindgen_ty_1)),
     );
     assert_eq!(
@@ -47851,6 +48289,16 @@ fn bindgen_test_layout__DMA_ADAPTER_INFO__bindgen_ty_1() {
             stringify!(_DMA_ADAPTER_INFO__bindgen_ty_1),
             "::",
             stringify!(V1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Crashdump) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_ADAPTER_INFO__bindgen_ty_1),
+            "::",
+            stringify!(Crashdump),
         ),
     );
 }
@@ -47869,12 +48317,12 @@ fn bindgen_test_layout__DMA_ADAPTER_INFO() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_DMA_ADAPTER_INFO>(),
-        24usize,
+        88usize,
         concat!("Size of: ", stringify!(_DMA_ADAPTER_INFO)),
     );
     assert_eq!(
         ::core::mem::align_of::<_DMA_ADAPTER_INFO>(),
-        4usize,
+        8usize,
         concat!("Alignment of ", stringify!(_DMA_ADAPTER_INFO)),
     );
     assert_eq!(
@@ -49485,6 +49933,13 @@ pub struct _IOMMU_DMA_DOMAIN {
 }
 pub type IOMMU_DMA_DOMAIN = _IOMMU_DMA_DOMAIN;
 pub type PIOMMU_DMA_DOMAIN = *mut _IOMMU_DMA_DOMAIN;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _IOMMU_DMA_PASID_DEVICE {
+    _unused: [u8; 0],
+}
+pub type IOMMU_DMA_PASID_DEVICE = _IOMMU_DMA_PASID_DEVICE;
+pub type PIOMMU_DMA_PASID_DEVICE = *mut _IOMMU_DMA_PASID_DEVICE;
 pub mod _FAULT_INFORMATION_ARCH {
     pub type Type = ::core::ffi::c_int;
     pub const FaultInformationInvalid: Type = 0;
@@ -50374,7 +50829,8 @@ pub mod _IOMMU_DMA_DOMAIN_TYPE {
     pub const DomainTypeTranslate: Type = 0;
     pub const DomainTypePassThrough: Type = 1;
     pub const DomainTypeUnmanaged: Type = 2;
-    pub const DomainTypeMax: Type = 3;
+    pub const DomainTypeTranslateS1: Type = 3;
+    pub const DomainTypeMax: Type = 4;
 }
 pub use self::_IOMMU_DMA_DOMAIN_TYPE::Type as IOMMU_DMA_DOMAIN_TYPE;
 pub type PIOMMU_DMA_DOMAIN_TYPE = *mut _IOMMU_DMA_DOMAIN_TYPE::Type;
@@ -50473,7 +50929,9 @@ pub mod _IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE {
     pub type Type = ::core::ffi::c_int;
     pub const IommuDeviceCreationConfigTypeNone: Type = 0;
     pub const IommuDeviceCreationConfigTypeAcpi: Type = 1;
-    pub const IommuDeviceCreationConfigTypeMax: Type = 2;
+    pub const IommuDeviceCreationConfigTypeDeviceId: Type = 2;
+    pub const IommuDeviceCreationConfigTypePasid: Type = 3;
+    pub const IommuDeviceCreationConfigTypeMax: Type = 4;
 }
 pub use self::_IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE::Type as IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE;
 pub type PIOMMU_DEVICE_CREATION_CONFIGURATION_TYPE = *mut _IOMMU_DEVICE_CREATION_CONFIGURATION_TYPE::Type;
@@ -50522,6 +50980,68 @@ fn bindgen_test_layout__IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI() {
 }
 pub type IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI = _IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI;
 pub type PIOMMU_DEVICE_CREATION_CONFIGURATION_ACPI = *mut _IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI;
+pub mod _IOMMU_PASID_CONFIGURATION_TYPE {
+    pub type Type = ::core::ffi::c_int;
+    pub const PasidConfigTypeDefaultPasidOnly: Type = 0;
+    pub const PasidConfigTypePasidTaggedDma: Type = 1;
+    pub const PasidConfigTypeMax: Type = 2;
+}
+pub use self::_IOMMU_PASID_CONFIGURATION_TYPE::Type as IOMMU_PASID_CONFIGURATION_TYPE;
+pub type PIOMMU_PASID_CONFIGURATION_TYPE = *mut _IOMMU_PASID_CONFIGURATION_TYPE::Type;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _IOMMU_DEVICE_CREATION_CONFIGURATION_PASID {
+    pub ConfigType: IOMMU_PASID_CONFIGURATION_TYPE,
+    pub SuppressPasidFaults: BOOLEAN,
+}
+#[test]
+fn bindgen_test_layout__IOMMU_DEVICE_CREATION_CONFIGURATION_PASID() {
+    const UNINIT: ::core::mem::MaybeUninit<_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID>(),
+        8usize,
+        concat!("Size of: ", stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ConfigType) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID),
+            "::",
+            stringify!(ConfigType),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SuppressPasidFaults) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION_PASID),
+            "::",
+            stringify!(SuppressPasidFaults),
+        ),
+    );
+}
+impl Default for _IOMMU_DEVICE_CREATION_CONFIGURATION_PASID {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type IOMMU_DEVICE_CREATION_CONFIGURATION_PASID = _IOMMU_DEVICE_CREATION_CONFIGURATION_PASID;
+pub type PIOMMU_DEVICE_CREATION_CONFIGURATION_PASID = *mut _IOMMU_DEVICE_CREATION_CONFIGURATION_PASID;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _IOMMU_DEVICE_CREATION_CONFIGURATION {
@@ -50533,6 +51053,8 @@ pub struct _IOMMU_DEVICE_CREATION_CONFIGURATION {
 #[derive(Copy, Clone)]
 pub union _IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1 {
     pub Acpi: IOMMU_DEVICE_CREATION_CONFIGURATION_ACPI,
+    pub DeviceId: PVOID,
+    pub Pasid: IOMMU_DEVICE_CREATION_CONFIGURATION_PASID,
 }
 #[test]
 fn bindgen_test_layout__IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1() {
@@ -50550,7 +51072,7 @@ fn bindgen_test_layout__IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1() {
     );
     assert_eq!(
         ::core::mem::align_of::<_IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1>(),
-        4usize,
+        8usize,
         concat!(
             "Alignment of ",
             stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1),
@@ -50564,6 +51086,26 @@ fn bindgen_test_layout__IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1() {
             stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1),
             "::",
             stringify!(Acpi),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeviceId) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1),
+            "::",
+            stringify!(DeviceId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Pasid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DEVICE_CREATION_CONFIGURATION__bindgen_ty_1),
+            "::",
+            stringify!(Pasid),
         ),
     );
 }
@@ -51418,6 +51960,66 @@ pub type IOMMU_INTERFACE_STATE_CHANGE_CALLBACK = ::core::option::Option<
     unsafe extern "C" fn(StateChange: PIOMMU_INTERFACE_STATE_CHANGE, Context: PVOID),
 >;
 pub type PIOMMU_INTERFACE_STATE_CHANGE_CALLBACK = IOMMU_INTERFACE_STATE_CHANGE_CALLBACK;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _IOMMU_DMA_DEVICE_INFORMATION {
+    pub DefaultPasidEnabled: BOOLEAN,
+    pub PasidTaggedDmaEnabled: BOOLEAN,
+    pub PasidFaultsSuppressed: BOOLEAN,
+}
+#[test]
+fn bindgen_test_layout__IOMMU_DMA_DEVICE_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_IOMMU_DMA_DEVICE_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_IOMMU_DMA_DEVICE_INFORMATION>(),
+        3usize,
+        concat!("Size of: ", stringify!(_IOMMU_DMA_DEVICE_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_IOMMU_DMA_DEVICE_INFORMATION>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_IOMMU_DMA_DEVICE_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DefaultPasidEnabled) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DMA_DEVICE_INFORMATION),
+            "::",
+            stringify!(DefaultPasidEnabled),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).PasidTaggedDmaEnabled) as usize - ptr as usize
+        },
+        1usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DMA_DEVICE_INFORMATION),
+            "::",
+            stringify!(PasidTaggedDmaEnabled),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).PasidFaultsSuppressed) as usize - ptr as usize
+        },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IOMMU_DMA_DEVICE_INFORMATION),
+            "::",
+            stringify!(PasidFaultsSuppressed),
+        ),
+    );
+}
+pub type IOMMU_DMA_DEVICE_INFORMATION = _IOMMU_DMA_DEVICE_INFORMATION;
+pub type PIOMMU_DMA_DEVICE_INFORMATION = *mut _IOMMU_DMA_DEVICE_INFORMATION;
 pub type IOMMU_DOMAIN_CREATE = ::core::option::Option<
     unsafe extern "C" fn(
         OsManagedPageTable: BOOLEAN,
@@ -51667,6 +52269,38 @@ pub type IOMMU_SET_DEVICE_FAULT_REPORTING_EX = ::core::option::Option<
     ) -> NTSTATUS,
 >;
 pub type PIOMMU_SET_DEVICE_FAULT_REPORTING_EX = IOMMU_SET_DEVICE_FAULT_REPORTING_EX;
+pub type IOMMU_PASID_DEVICE_CREATE = ::core::option::Option<
+    unsafe extern "C" fn(
+        DmaDevice: PIOMMU_DMA_DEVICE,
+        PasidDeviceOut: *mut PIOMMU_DMA_PASID_DEVICE,
+        AsidOut: PULONG,
+    ) -> NTSTATUS,
+>;
+pub type PIOMMU_PASID_DEVICE_CREATE = IOMMU_PASID_DEVICE_CREATE;
+pub type IOMMU_PASID_DEVICE_DELETE = ::core::option::Option<
+    unsafe extern "C" fn(PasidDevice: PIOMMU_DMA_PASID_DEVICE) -> NTSTATUS,
+>;
+pub type PIOMMU_PASID_DEVICE_DELETE = IOMMU_PASID_DEVICE_DELETE;
+pub type IOMMU_DOMAIN_ATTACH_PASID_DEVICE = ::core::option::Option<
+    unsafe extern "C" fn(
+        Domain: PIOMMU_DMA_DOMAIN,
+        PasidDevice: PIOMMU_DMA_PASID_DEVICE,
+    ) -> NTSTATUS,
+>;
+pub type PIOMMU_DOMAIN_ATTACH_PASID_DEVICE = IOMMU_DOMAIN_ATTACH_PASID_DEVICE;
+pub type IOMMU_DOMAIN_DETACH_PASID_DEVICE = ::core::option::Option<
+    unsafe extern "C" fn(PasidDevice: PIOMMU_DMA_PASID_DEVICE) -> NTSTATUS,
+>;
+pub type PIOMMU_DOMAIN_DETACH_PASID_DEVICE = IOMMU_DOMAIN_DETACH_PASID_DEVICE;
+pub type IOMMU_DEVICE_QUERY_INFORMATION = ::core::option::Option<
+    unsafe extern "C" fn(
+        DmaDevice: PIOMMU_DMA_DEVICE,
+        Size: ULONG,
+        BytesWritten: PULONG,
+        Buffer: PIOMMU_DMA_DEVICE_INFORMATION,
+    ) -> NTSTATUS,
+>;
+pub type PIOMMU_DEVICE_QUERY_INFORMATION = IOMMU_DEVICE_QUERY_INFORMATION;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct _DMA_IOMMU_INTERFACE {
@@ -52327,6 +52961,367 @@ fn bindgen_test_layout__DMA_IOMMU_INTERFACE_V2() {
 pub type DMA_IOMMU_INTERFACE_V2 = _DMA_IOMMU_INTERFACE_V2;
 pub type PDMA_IOMMU_INTERFACE_V2 = *mut _DMA_IOMMU_INTERFACE_V2;
 #[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _DMA_IOMMU_INTERFACE_V3 {
+    pub CreateDomainEx: PIOMMU_DOMAIN_CREATE_EX,
+    pub DeleteDomain: PIOMMU_DOMAIN_DELETE,
+    pub AttachDeviceEx: PIOMMU_DOMAIN_ATTACH_DEVICE_EX,
+    pub DetachDeviceEx: PIOMMU_DOMAIN_DETACH_DEVICE_EX,
+    pub FlushDomain: PIOMMU_FLUSH_DOMAIN,
+    pub FlushDomainByVaList: PIOMMU_FLUSH_DOMAIN_VA_LIST,
+    pub QueryInputMappings: PIOMMU_QUERY_INPUT_MAPPINGS,
+    pub MapLogicalRangeEx: PIOMMU_MAP_LOGICAL_RANGE_EX,
+    pub UnmapLogicalRange: PIOMMU_UNMAP_LOGICAL_RANGE,
+    pub MapIdentityRangeEx: PIOMMU_MAP_IDENTITY_RANGE_EX,
+    pub UnmapIdentityRangeEx: PIOMMU_UNMAP_IDENTITY_RANGE_EX,
+    pub SetDeviceFaultReportingEx: PIOMMU_SET_DEVICE_FAULT_REPORTING_EX,
+    pub ConfigureDomain: PIOMMU_DOMAIN_CONFIGURE,
+    pub QueryAvailableDomainTypes: PIOMMU_DEVICE_QUERY_DOMAIN_TYPES,
+    pub RegisterInterfaceStateChangeCallback: PIOMMU_REGISTER_INTERFACE_STATE_CHANGE_CALLBACK,
+    pub UnregisterInterfaceStateChangeCallback: PIOMMU_UNREGISTER_INTERFACE_STATE_CHANGE_CALLBACK,
+    pub ReserveLogicalAddressRange: PIOMMU_RESERVE_LOGICAL_ADDRESS_RANGE,
+    pub FreeReservedLogicalAddressRange: PIOMMU_FREE_RESERVED_LOGICAL_ADDRESS_RANGE,
+    pub MapReservedLogicalRange: PIOMMU_MAP_RESERVED_LOGICAL_RANGE,
+    pub UnmapReservedLogicalRange: PIOMMU_UNMAP_RESERVED_LOGICAL_RANGE,
+    pub CreateDevice: PIOMMU_DEVICE_CREATE,
+    pub DeleteDevice: PIOMMU_DEVICE_DELETE,
+    pub CreatePasidDevice: PIOMMU_PASID_DEVICE_CREATE,
+    pub DeletePasidDevice: PIOMMU_PASID_DEVICE_DELETE,
+    pub AttachPasidDevice: PIOMMU_DOMAIN_ATTACH_PASID_DEVICE,
+    pub DetachPasidDevice: PIOMMU_DOMAIN_DETACH_PASID_DEVICE,
+    pub QueryDeviceInfo: PIOMMU_DEVICE_QUERY_INFORMATION,
+}
+#[test]
+fn bindgen_test_layout__DMA_IOMMU_INTERFACE_V3() {
+    const UNINIT: ::core::mem::MaybeUninit<_DMA_IOMMU_INTERFACE_V3> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_DMA_IOMMU_INTERFACE_V3>(),
+        216usize,
+        concat!("Size of: ", stringify!(_DMA_IOMMU_INTERFACE_V3)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_DMA_IOMMU_INTERFACE_V3>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_DMA_IOMMU_INTERFACE_V3)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreateDomainEx) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(CreateDomainEx),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeleteDomain) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(DeleteDomain),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AttachDeviceEx) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(AttachDeviceEx),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DetachDeviceEx) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(DetachDeviceEx),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FlushDomain) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(FlushDomain),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).FlushDomainByVaList) as usize - ptr as usize
+        },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(FlushDomainByVaList),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).QueryInputMappings) as usize - ptr as usize
+        },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(QueryInputMappings),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MapLogicalRangeEx) as usize - ptr as usize
+        },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(MapLogicalRangeEx),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).UnmapLogicalRange) as usize - ptr as usize
+        },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(UnmapLogicalRange),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MapIdentityRangeEx) as usize - ptr as usize
+        },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(MapIdentityRangeEx),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).UnmapIdentityRangeEx) as usize - ptr as usize
+        },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(UnmapIdentityRangeEx),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SetDeviceFaultReportingEx) as usize
+                - ptr as usize
+        },
+        88usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(SetDeviceFaultReportingEx),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ConfigureDomain) as usize - ptr as usize },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(ConfigureDomain),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).QueryAvailableDomainTypes) as usize
+                - ptr as usize
+        },
+        104usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(QueryAvailableDomainTypes),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).RegisterInterfaceStateChangeCallback) as usize
+                - ptr as usize
+        },
+        112usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(RegisterInterfaceStateChangeCallback),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).UnregisterInterfaceStateChangeCallback) as usize
+                - ptr as usize
+        },
+        120usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(UnregisterInterfaceStateChangeCallback),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).ReserveLogicalAddressRange) as usize
+                - ptr as usize
+        },
+        128usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(ReserveLogicalAddressRange),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).FreeReservedLogicalAddressRange) as usize
+                - ptr as usize
+        },
+        136usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(FreeReservedLogicalAddressRange),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MapReservedLogicalRange) as usize - ptr as usize
+        },
+        144usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(MapReservedLogicalRange),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).UnmapReservedLogicalRange) as usize
+                - ptr as usize
+        },
+        152usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(UnmapReservedLogicalRange),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreateDevice) as usize - ptr as usize },
+        160usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(CreateDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeleteDevice) as usize - ptr as usize },
+        168usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(DeleteDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CreatePasidDevice) as usize - ptr as usize
+        },
+        176usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(CreatePasidDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DeletePasidDevice) as usize - ptr as usize
+        },
+        184usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(DeletePasidDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).AttachPasidDevice) as usize - ptr as usize
+        },
+        192usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(AttachPasidDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DetachPasidDevice) as usize - ptr as usize
+        },
+        200usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(DetachPasidDevice),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).QueryDeviceInfo) as usize - ptr as usize },
+        208usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_V3),
+            "::",
+            stringify!(QueryDeviceInfo),
+        ),
+    );
+}
+pub type DMA_IOMMU_INTERFACE_V3 = _DMA_IOMMU_INTERFACE_V3;
+pub type PDMA_IOMMU_INTERFACE_V3 = *mut _DMA_IOMMU_INTERFACE_V3;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DMA_IOMMU_INTERFACE_EX {
     pub Size: SIZE_T,
@@ -52338,6 +53333,7 @@ pub struct _DMA_IOMMU_INTERFACE_EX {
 pub union _DMA_IOMMU_INTERFACE_EX__bindgen_ty_1 {
     pub V1: DMA_IOMMU_INTERFACE_V1,
     pub V2: DMA_IOMMU_INTERFACE_V2,
+    pub V3: DMA_IOMMU_INTERFACE_V3,
 }
 #[test]
 fn bindgen_test_layout__DMA_IOMMU_INTERFACE_EX__bindgen_ty_1() {
@@ -52345,7 +53341,7 @@ fn bindgen_test_layout__DMA_IOMMU_INTERFACE_EX__bindgen_ty_1() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_DMA_IOMMU_INTERFACE_EX__bindgen_ty_1>(),
-        176usize,
+        216usize,
         concat!("Size of: ", stringify!(_DMA_IOMMU_INTERFACE_EX__bindgen_ty_1)),
     );
     assert_eq!(
@@ -52373,6 +53369,16 @@ fn bindgen_test_layout__DMA_IOMMU_INTERFACE_EX__bindgen_ty_1() {
             stringify!(V2),
         ),
     );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).V3) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DMA_IOMMU_INTERFACE_EX__bindgen_ty_1),
+            "::",
+            stringify!(V3),
+        ),
+    );
 }
 impl Default for _DMA_IOMMU_INTERFACE_EX__bindgen_ty_1 {
     fn default() -> Self {
@@ -52389,7 +53395,7 @@ fn bindgen_test_layout__DMA_IOMMU_INTERFACE_EX() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_DMA_IOMMU_INTERFACE_EX>(),
-        192usize,
+        232usize,
         concat!("Size of: ", stringify!(_DMA_IOMMU_INTERFACE_EX)),
     );
     assert_eq!(
@@ -74666,6 +75672,12 @@ pub mod _RTL_SYSTEM_GLOBAL_DATA_ID {
     pub const GlobalDataIdCyclesPerYield: Type = 11;
     pub const GlobalDataIdSafeBootMode: Type = 12;
     pub const GlobalDataIdLastSystemRITEventTickCount: Type = 13;
+    pub const GlobalDataIdConsoleSharedDataFlags: Type = 14;
+    pub const GlobalDataIdNtSystemRootDrive: Type = 15;
+    pub const GlobalDataIdQpcShift: Type = 16;
+    pub const GlobalDataIdQpcBypassEnabled: Type = 17;
+    pub const GlobalDataIdQpcData: Type = 18;
+    pub const GlobalDataIdQpcBias: Type = 19;
 }
 pub use self::_RTL_SYSTEM_GLOBAL_DATA_ID::Type as RTL_SYSTEM_GLOBAL_DATA_ID;
 pub type PRTL_SYSTEM_GLOBAL_DATA_ID = *mut _RTL_SYSTEM_GLOBAL_DATA_ID::Type;
@@ -76741,7 +77753,7 @@ pub mod _THREADINFOCLASS {
     pub const ThreadActualGroupAffinity: Type = 41;
     pub const ThreadDynamicCodePolicyInfo: Type = 42;
     pub const ThreadSubsystemInformation: Type = 45;
-    pub const MaxThreadInfoClass: Type = 53;
+    pub const MaxThreadInfoClass: Type = 56;
 }
 pub use self::_THREADINFOCLASS::Type as THREADINFOCLASS;
 #[repr(C)]
@@ -77291,6 +78303,38 @@ impl Default for _PROCESS_EXTENDED_BASIC_INFORMATION {
 }
 pub type PROCESS_EXTENDED_BASIC_INFORMATION = _PROCESS_EXTENDED_BASIC_INFORMATION;
 pub type PPROCESS_EXTENDED_BASIC_INFORMATION = *mut _PROCESS_EXTENDED_BASIC_INFORMATION;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PROCESS_MEMBERSHIP_INFORMATION {
+    pub ServerSiloId: ULONG,
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MEMBERSHIP_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_PROCESS_MEMBERSHIP_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_MEMBERSHIP_INFORMATION>(),
+        4usize,
+        concat!("Size of: ", stringify!(_PROCESS_MEMBERSHIP_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_MEMBERSHIP_INFORMATION>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_PROCESS_MEMBERSHIP_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ServerSiloId) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PROCESS_MEMBERSHIP_INFORMATION),
+            "::",
+            stringify!(ServerSiloId),
+        ),
+    );
+}
+pub type PROCESS_MEMBERSHIP_INFORMATION = _PROCESS_MEMBERSHIP_INFORMATION;
+pub type PPROCESS_MEMBERSHIP_INFORMATION = *mut _PROCESS_MEMBERSHIP_INFORMATION;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _PROCESS_DEVICEMAP_INFORMATION {
@@ -79135,7 +80179,10 @@ pub mod _PROCESS_MITIGATION_POLICY {
     pub const ProcessSideChannelIsolationPolicy: Type = 14;
     pub const ProcessUserShadowStackPolicy: Type = 15;
     pub const ProcessRedirectionTrustPolicy: Type = 16;
-    pub const MaxProcessMitigationPolicy: Type = 17;
+    pub const ProcessUserPointerAuthPolicy: Type = 17;
+    pub const ProcessSEHOPPolicy: Type = 18;
+    pub const ProcessActivationContextTrustPolicy: Type = 19;
+    pub const MaxProcessMitigationPolicy: Type = 20;
 }
 pub use self::_PROCESS_MITIGATION_POLICY::Type as PROCESS_MITIGATION_POLICY;
 pub type PPROCESS_MITIGATION_POLICY = *mut _PROCESS_MITIGATION_POLICY::Type;
@@ -79558,6 +80605,163 @@ pub type PROCESS_MITIGATION_DEP_POLICY = _PROCESS_MITIGATION_DEP_POLICY;
 pub type PPROCESS_MITIGATION_DEP_POLICY = *mut _PROCESS_MITIGATION_DEP_POLICY;
 #[repr(C)]
 #[derive(Copy, Clone)]
+pub struct _PROCESS_MITIGATION_SEHOP_POLICY {
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1 {
+    pub Flags: ULONG,
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1),
+        ),
+    );
+}
+impl _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    #[inline]
+    pub fn EnableSehop(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_EnableSehop(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ReservedFlags(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 31u8) as u32) }
+    }
+    #[inline]
+    pub fn set_ReservedFlags(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 31u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        EnableSehop: ULONG,
+        ReservedFlags: ULONG,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let EnableSehop: u32 = unsafe {
+                        ::core::mem::transmute(EnableSehop)
+                    };
+                    EnableSehop as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                31u8,
+                {
+                    let ReservedFlags: u32 = unsafe {
+                        ::core::mem::transmute(ReservedFlags)
+                    };
+                    ReservedFlags as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+}
+impl Default for _PROCESS_MITIGATION_SEHOP_POLICY__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_SEHOP_POLICY() {
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_MITIGATION_SEHOP_POLICY>(),
+        4usize,
+        concat!("Size of: ", stringify!(_PROCESS_MITIGATION_SEHOP_POLICY)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_MITIGATION_SEHOP_POLICY>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_PROCESS_MITIGATION_SEHOP_POLICY)),
+    );
+}
+impl Default for _PROCESS_MITIGATION_SEHOP_POLICY {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PROCESS_MITIGATION_SEHOP_POLICY = _PROCESS_MITIGATION_SEHOP_POLICY;
+pub type PPROCESS_MITIGATION_SEHOP_POLICY = *mut _PROCESS_MITIGATION_SEHOP_POLICY;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct _PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY {
     pub __bindgen_anon_1: _PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY__bindgen_ty_1,
 }
@@ -79818,20 +81022,44 @@ impl _PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY__bindgen_ty_1__bindgen_ty_1 
         }
     }
     #[inline]
+    pub fn DisallowFsctlSystemCalls(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_DisallowFsctlSystemCalls(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(2usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn AuditDisallowFsctlSystemCalls(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(3usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_AuditDisallowFsctlSystemCalls(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(3usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
     pub fn ReservedFlags(&self) -> ULONG {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(2usize, 30u8) as u32) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 28u8) as u32) }
     }
     #[inline]
     pub fn set_ReservedFlags(&mut self, val: ULONG) {
         unsafe {
             let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(2usize, 30u8, val as u64)
+            self._bitfield_1.set(4usize, 28u8, val as u64)
         }
     }
     #[inline]
     pub fn new_bitfield_1(
         DisallowWin32kSystemCalls: ULONG,
         AuditDisallowWin32kSystemCalls: ULONG,
+        DisallowFsctlSystemCalls: ULONG,
+        AuditDisallowFsctlSystemCalls: ULONG,
         ReservedFlags: ULONG,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
@@ -79860,7 +81088,29 @@ impl _PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY__bindgen_ty_1__bindgen_ty_1 
         __bindgen_bitfield_unit
             .set(
                 2usize,
-                30u8,
+                1u8,
+                {
+                    let DisallowFsctlSystemCalls: u32 = unsafe {
+                        ::core::mem::transmute(DisallowFsctlSystemCalls)
+                    };
+                    DisallowFsctlSystemCalls as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                3usize,
+                1u8,
+                {
+                    let AuditDisallowFsctlSystemCalls: u32 = unsafe {
+                        ::core::mem::transmute(AuditDisallowFsctlSystemCalls)
+                    };
+                    AuditDisallowFsctlSystemCalls as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                4usize,
+                28u8,
                 {
                     let ReservedFlags: u32 = unsafe {
                         ::core::mem::transmute(ReservedFlags)
@@ -82204,14 +83454,25 @@ impl _PROCESS_MITIGATION_SIDE_CHANNEL_ISOLATION_POLICY__bindgen_ty_1__bindgen_ty
         }
     }
     #[inline]
+    pub fn RestrictCoreSharing(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_RestrictCoreSharing(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
     pub fn ReservedFlags(&self) -> ULONG {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 28u8) as u32) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 27u8) as u32) }
     }
     #[inline]
     pub fn set_ReservedFlags(&mut self, val: ULONG) {
         unsafe {
             let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 28u8, val as u64)
+            self._bitfield_1.set(5usize, 27u8, val as u64)
         }
     }
     #[inline]
@@ -82220,6 +83481,7 @@ impl _PROCESS_MITIGATION_SIDE_CHANNEL_ISOLATION_POLICY__bindgen_ty_1__bindgen_ty
         IsolateSecurityDomain: ULONG,
         DisablePageCombine: ULONG,
         SpeculativeStoreBypassDisable: ULONG,
+        RestrictCoreSharing: ULONG,
         ReservedFlags: ULONG,
     ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
@@ -82270,7 +83532,18 @@ impl _PROCESS_MITIGATION_SIDE_CHANNEL_ISOLATION_POLICY__bindgen_ty_1__bindgen_ty
         __bindgen_bitfield_unit
             .set(
                 4usize,
-                28u8,
+                1u8,
+                {
+                    let RestrictCoreSharing: u32 = unsafe {
+                        ::core::mem::transmute(RestrictCoreSharing)
+                    };
+                    RestrictCoreSharing as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                5usize,
+                27u8,
                 {
                     let ReservedFlags: u32 = unsafe {
                         ::core::mem::transmute(ReservedFlags)
@@ -82737,6 +84010,177 @@ pub type PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY = _PROCESS_MITIGATION_USER_
 pub type PPROCESS_MITIGATION_USER_SHADOW_STACK_POLICY = *mut _PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY;
 #[repr(C)]
 #[derive(Copy, Clone)]
+pub struct _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY {
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1 {
+    pub Flags: ULONG,
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+}
+impl _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    #[inline]
+    pub fn EnablePointerAuthUserIp(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_EnablePointerAuthUserIp(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ReservedFlags(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 31u8) as u32) }
+    }
+    #[inline]
+    pub fn set_ReservedFlags(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 31u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        EnablePointerAuthUserIp: ULONG,
+        ReservedFlags: ULONG,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let EnablePointerAuthUserIp: u32 = unsafe {
+                        ::core::mem::transmute(EnablePointerAuthUserIp)
+                    };
+                    EnablePointerAuthUserIp as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                31u8,
+                {
+                    let ReservedFlags: u32 = unsafe {
+                        ::core::mem::transmute(ReservedFlags)
+                    };
+                    ReservedFlags as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+}
+impl Default for _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY() {
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY>(),
+        4usize,
+        concat!("Size of: ", stringify!(_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY),
+        ),
+    );
+}
+impl Default for _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY = _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY;
+pub type PPROCESS_MITIGATION_USER_POINTER_AUTH_POLICY = *mut _PROCESS_MITIGATION_USER_POINTER_AUTH_POLICY;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct _PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY {
     pub __bindgen_anon_1: _PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY__bindgen_ty_1,
 }
@@ -82929,6 +84373,182 @@ impl Default for _PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY {
 }
 pub type PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY = _PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY;
 pub type PPROCESS_MITIGATION_REDIRECTION_TRUST_POLICY = *mut _PROCESS_MITIGATION_REDIRECTION_TRUST_POLICY;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY {
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1 {
+    pub Flags: ULONG,
+    pub __bindgen_anon_1: _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+}
+impl _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1__bindgen_ty_1 {
+    #[inline]
+    pub fn AssemblyManifestRedirectionTrust(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_AssemblyManifestRedirectionTrust(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn ReservedFlags(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 31u8) as u32) }
+    }
+    #[inline]
+    pub fn set_ReservedFlags(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 31u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        AssemblyManifestRedirectionTrust: ULONG,
+        ReservedFlags: ULONG,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let AssemblyManifestRedirectionTrust: u32 = unsafe {
+                        ::core::mem::transmute(AssemblyManifestRedirectionTrust)
+                    };
+                    AssemblyManifestRedirectionTrust as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                31u8,
+                {
+                    let ReservedFlags: u32 = unsafe {
+                        ::core::mem::transmute(ReservedFlags)
+                    };
+                    ReservedFlags as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1
+            ),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+}
+impl Default for _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY() {
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY>(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY),
+        ),
+    );
+}
+impl Default for _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY = _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY;
+pub type PPROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY = *mut _PROCESS_MITIGATION_ACTIVATION_CONTEXT_TRUST_POLICY;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct _PROCESS_KEEPALIVE_COUNT_INFORMATION {
@@ -83441,6 +85061,49 @@ fn bindgen_test_layout__POWER_THROTTLING_THREAD_STATE() {
 }
 pub type POWER_THROTTLING_THREAD_STATE = _POWER_THROTTLING_THREAD_STATE;
 pub type PPOWER_THROTTLING_THREAD_STATE = *mut _POWER_THROTTLING_THREAD_STATE;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PROCESS_SYSCALL_PROVIDER_INFORMATION {
+    pub ProviderId: GUID,
+    pub Level: UCHAR,
+}
+#[test]
+fn bindgen_test_layout__PROCESS_SYSCALL_PROVIDER_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_PROCESS_SYSCALL_PROVIDER_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PROCESS_SYSCALL_PROVIDER_INFORMATION>(),
+        20usize,
+        concat!("Size of: ", stringify!(_PROCESS_SYSCALL_PROVIDER_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PROCESS_SYSCALL_PROVIDER_INFORMATION>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_PROCESS_SYSCALL_PROVIDER_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ProviderId) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PROCESS_SYSCALL_PROVIDER_INFORMATION),
+            "::",
+            stringify!(ProviderId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Level) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PROCESS_SYSCALL_PROVIDER_INFORMATION),
+            "::",
+            stringify!(Level),
+        ),
+    );
+}
+pub type PROCESS_SYSCALL_PROVIDER_INFORMATION = _PROCESS_SYSCALL_PROVIDER_INFORMATION;
+pub type PPROCESS_SYSCALL_PROVIDER_INFORMATION = *mut _PROCESS_SYSCALL_PROVIDER_INFORMATION;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _KPCR {
@@ -85875,6 +87538,7 @@ pub struct _KUSER_SHARED_DATA {
     pub XState: XSTATE_CONFIGURATION,
     pub FeatureConfigurationChangeStamp: KSYSTEM_TIME,
     pub Spare: ULONG,
+    pub UserPointerAuthMask: ULONG64,
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -86617,7 +88281,7 @@ fn bindgen_test_layout__KUSER_SHARED_DATA() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_KUSER_SHARED_DATA>(),
-        1840usize,
+        1848usize,
         concat!("Size of: ", stringify!(_KUSER_SHARED_DATA)),
     );
     assert_eq!(
@@ -87445,6 +89109,18 @@ fn bindgen_test_layout__KUSER_SHARED_DATA() {
             stringify!(_KUSER_SHARED_DATA),
             "::",
             stringify!(Spare),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).UserPointerAuthMask) as usize - ptr as usize
+        },
+        1840usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_KUSER_SHARED_DATA),
+            "::",
+            stringify!(UserPointerAuthMask),
         ),
     );
 }
@@ -89644,6 +91320,62 @@ impl Default for _IO_DRIVER_CREATE_CONTEXT {
 }
 pub type IO_DRIVER_CREATE_CONTEXT = _IO_DRIVER_CREATE_CONTEXT;
 pub type PIO_DRIVER_CREATE_CONTEXT = *mut _IO_DRIVER_CREATE_CONTEXT;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _IO_FOEXT_SHADOW_FILE {
+    pub BackingFileObject: PFILE_OBJECT,
+    pub BackingFltInstance: PVOID,
+}
+#[test]
+fn bindgen_test_layout__IO_FOEXT_SHADOW_FILE() {
+    const UNINIT: ::core::mem::MaybeUninit<_IO_FOEXT_SHADOW_FILE> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_IO_FOEXT_SHADOW_FILE>(),
+        16usize,
+        concat!("Size of: ", stringify!(_IO_FOEXT_SHADOW_FILE)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_IO_FOEXT_SHADOW_FILE>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_IO_FOEXT_SHADOW_FILE)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).BackingFileObject) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_FOEXT_SHADOW_FILE),
+            "::",
+            stringify!(BackingFileObject),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).BackingFltInstance) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_IO_FOEXT_SHADOW_FILE),
+            "::",
+            stringify!(BackingFltInstance),
+        ),
+    );
+}
+impl Default for _IO_FOEXT_SHADOW_FILE {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type IO_FOEXT_SHADOW_FILE = _IO_FOEXT_SHADOW_FILE;
+pub type PIO_FOEXT_SHADOW_FILE = *mut _IO_FOEXT_SHADOW_FILE;
 pub mod _BDCB_CALLBACK_TYPE {
     pub type Type = ::core::ffi::c_int;
     pub const BdCbStatusUpdate: Type = 0;
@@ -91283,6 +93015,7 @@ pub mod _HAL_SET_INFORMATION_CLASS {
     pub const HalProfileSourceAdd: Type = 20;
     pub const HalProfileSourceRemove: Type = 21;
     pub const HalSetSwInterruptHandler: Type = 22;
+    pub const HalSetClockTimerMinimumInterval: Type = 23;
 }
 pub use self::_HAL_SET_INFORMATION_CLASS::Type as HAL_SET_INFORMATION_CLASS;
 pub type PHAL_SET_INFORMATION_CLASS = *mut _HAL_SET_INFORMATION_CLASS::Type;
@@ -104504,6 +106237,363 @@ pub type PCI_EXPRESS_DEVICE_STATUS_2_REGISTER = _PCI_EXPRESS_DEVICE_STATUS_2_REG
 pub type PPCI_EXPRESS_DEVICE_STATUS_2_REGISTER = *mut _PCI_EXPRESS_DEVICE_STATUS_2_REGISTER;
 #[repr(C)]
 #[derive(Copy, Clone)]
+pub union _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER {
+    pub __bindgen_anon_1: _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1,
+    pub AsULONG: ULONG,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1 {
+    pub _bitfield_align_1: [u32; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 4usize]>,
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<
+            _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+}
+impl _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER__bindgen_ty_1 {
+    #[inline]
+    pub fn Rsvd0(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_Rsvd0(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn SupportedLinkSpeedsVector(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(1usize, 7u8) as u32) }
+    }
+    #[inline]
+    pub fn set_SupportedLinkSpeedsVector(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(1usize, 7u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn Rsvd8_31(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(8usize, 24u8) as u32) }
+    }
+    #[inline]
+    pub fn set_Rsvd8_31(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(8usize, 24u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        Rsvd0: ULONG,
+        SupportedLinkSpeedsVector: ULONG,
+        Rsvd8_31: ULONG,
+    ) -> __BindgenBitfieldUnit<[u8; 4usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 4usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                1u8,
+                {
+                    let Rsvd0: u32 = unsafe { ::core::mem::transmute(Rsvd0) };
+                    Rsvd0 as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                1usize,
+                7u8,
+                {
+                    let SupportedLinkSpeedsVector: u32 = unsafe {
+                        ::core::mem::transmute(SupportedLinkSpeedsVector)
+                    };
+                    SupportedLinkSpeedsVector as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                8usize,
+                24u8,
+                {
+                    let Rsvd8_31: u32 = unsafe { ::core::mem::transmute(Rsvd8_31) };
+                    Rsvd8_31 as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER() {
+    const UNINIT: ::core::mem::MaybeUninit<_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER>(),
+        4usize,
+        concat!("Size of: ", stringify!(_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AsULONG) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER),
+            "::",
+            stringify!(AsULONG),
+        ),
+    );
+}
+impl Default for _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER = _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER;
+pub type PPCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER = *mut _PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _PCI_EXPRESS_LINK_CONTROL_2_REGISTER {
+    pub __bindgen_anon_1: _PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1,
+    pub AsUSHORT: USHORT,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1 {
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<_PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1>(),
+        2usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1>(),
+        2usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+}
+impl _PCI_EXPRESS_LINK_CONTROL_2_REGISTER__bindgen_ty_1 {
+    #[inline]
+    pub fn TargetLinkSpeed(&self) -> USHORT {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 4u8) as u16) }
+    }
+    #[inline]
+    pub fn set_TargetLinkSpeed(&mut self, val: USHORT) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 4u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn Rsvd4_15(&self) -> USHORT {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 12u8) as u16) }
+    }
+    #[inline]
+    pub fn set_Rsvd4_15(&mut self, val: USHORT) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 12u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(
+        TargetLinkSpeed: USHORT,
+        Rsvd4_15: USHORT,
+    ) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                4u8,
+                {
+                    let TargetLinkSpeed: u16 = unsafe {
+                        ::core::mem::transmute(TargetLinkSpeed)
+                    };
+                    TargetLinkSpeed as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                4usize,
+                12u8,
+                {
+                    let Rsvd4_15: u16 = unsafe { ::core::mem::transmute(Rsvd4_15) };
+                    Rsvd4_15 as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_CONTROL_2_REGISTER() {
+    const UNINIT: ::core::mem::MaybeUninit<_PCI_EXPRESS_LINK_CONTROL_2_REGISTER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PCI_EXPRESS_LINK_CONTROL_2_REGISTER>(),
+        2usize,
+        concat!("Size of: ", stringify!(_PCI_EXPRESS_LINK_CONTROL_2_REGISTER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PCI_EXPRESS_LINK_CONTROL_2_REGISTER>(),
+        2usize,
+        concat!("Alignment of ", stringify!(_PCI_EXPRESS_LINK_CONTROL_2_REGISTER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AsUSHORT) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_LINK_CONTROL_2_REGISTER),
+            "::",
+            stringify!(AsUSHORT),
+        ),
+    );
+}
+impl Default for _PCI_EXPRESS_LINK_CONTROL_2_REGISTER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PCI_EXPRESS_LINK_CONTROL_2_REGISTER = _PCI_EXPRESS_LINK_CONTROL_2_REGISTER;
+pub type PPCI_EXPRESS_LINK_CONTROL_2_REGISTER = *mut _PCI_EXPRESS_LINK_CONTROL_2_REGISTER;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _PCI_EXPRESS_LINK_STATUS_2_REGISTER {
+    pub __bindgen_anon_1: _PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1,
+    pub AsUSHORT: USHORT,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1 {
+    pub _bitfield_align_1: [u16; 0],
+    pub _bitfield_1: __BindgenBitfieldUnit<[u8; 2usize]>,
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1() {
+    assert_eq!(
+        ::core::mem::size_of::<_PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1>(),
+        2usize,
+        concat!(
+            "Size of: ",
+            stringify!(_PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1>(),
+        2usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1),
+        ),
+    );
+}
+impl _PCI_EXPRESS_LINK_STATUS_2_REGISTER__bindgen_ty_1 {
+    #[inline]
+    pub fn Rsvd0_15(&self) -> USHORT {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(0usize, 16u8) as u16) }
+    }
+    #[inline]
+    pub fn set_Rsvd0_15(&mut self, val: USHORT) {
+        unsafe {
+            let val: u16 = ::core::mem::transmute(val);
+            self._bitfield_1.set(0usize, 16u8, val as u64)
+        }
+    }
+    #[inline]
+    pub fn new_bitfield_1(Rsvd0_15: USHORT) -> __BindgenBitfieldUnit<[u8; 2usize]> {
+        let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 2usize]> = Default::default();
+        __bindgen_bitfield_unit
+            .set(
+                0usize,
+                16u8,
+                {
+                    let Rsvd0_15: u16 = unsafe { ::core::mem::transmute(Rsvd0_15) };
+                    Rsvd0_15 as u64
+                },
+            );
+        __bindgen_bitfield_unit
+    }
+}
+#[test]
+fn bindgen_test_layout__PCI_EXPRESS_LINK_STATUS_2_REGISTER() {
+    const UNINIT: ::core::mem::MaybeUninit<_PCI_EXPRESS_LINK_STATUS_2_REGISTER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_PCI_EXPRESS_LINK_STATUS_2_REGISTER>(),
+        2usize,
+        concat!("Size of: ", stringify!(_PCI_EXPRESS_LINK_STATUS_2_REGISTER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_PCI_EXPRESS_LINK_STATUS_2_REGISTER>(),
+        2usize,
+        concat!("Alignment of ", stringify!(_PCI_EXPRESS_LINK_STATUS_2_REGISTER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AsUSHORT) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_LINK_STATUS_2_REGISTER),
+            "::",
+            stringify!(AsUSHORT),
+        ),
+    );
+}
+impl Default for _PCI_EXPRESS_LINK_STATUS_2_REGISTER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type PCI_EXPRESS_LINK_STATUS_2_REGISTER = _PCI_EXPRESS_LINK_STATUS_2_REGISTER;
+pub type PPCI_EXPRESS_LINK_STATUS_2_REGISTER = *mut _PCI_EXPRESS_LINK_STATUS_2_REGISTER;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct _PCI_EXPRESS_CAPABILITY {
     pub Header: PCI_CAPABILITIES_HEADER,
     pub ExpressCapabilities: PCI_EXPRESS_CAPABILITIES_REGISTER,
@@ -104522,6 +106612,9 @@ pub struct _PCI_EXPRESS_CAPABILITY {
     pub DeviceCapabilities2: PCI_EXPRESS_DEVICE_CAPABILITIES_2_REGISTER,
     pub DeviceControl2: PCI_EXPRESS_DEVICE_CONTROL_2_REGISTER,
     pub DeviceStatus2: PCI_EXPRESS_DEVICE_STATUS_2_REGISTER,
+    pub LinkCapabilities2: PCI_EXPRESS_LINK_CAPABILITIES_2_REGISTER,
+    pub LinkControl2: PCI_EXPRESS_LINK_CONTROL_2_REGISTER,
+    pub LinkStatus2: PCI_EXPRESS_LINK_STATUS_2_REGISTER,
 }
 #[test]
 fn bindgen_test_layout__PCI_EXPRESS_CAPABILITY() {
@@ -104529,7 +106622,7 @@ fn bindgen_test_layout__PCI_EXPRESS_CAPABILITY() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_PCI_EXPRESS_CAPABILITY>(),
-        44usize,
+        52usize,
         concat!("Size of: ", stringify!(_PCI_EXPRESS_CAPABILITY)),
     );
     assert_eq!(
@@ -104719,6 +106812,38 @@ fn bindgen_test_layout__PCI_EXPRESS_CAPABILITY() {
             stringify!(DeviceStatus2),
         ),
     );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).LinkCapabilities2) as usize - ptr as usize
+        },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_CAPABILITY),
+            "::",
+            stringify!(LinkCapabilities2),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LinkControl2) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_CAPABILITY),
+            "::",
+            stringify!(LinkControl2),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LinkStatus2) as usize - ptr as usize },
+        50usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_PCI_EXPRESS_CAPABILITY),
+            "::",
+            stringify!(LinkStatus2),
+        ),
+    );
 }
 impl Default for _PCI_EXPRESS_CAPABILITY {
     fn default() -> Self {
@@ -104805,6 +106930,7 @@ pub mod PCI_DEVICE_D3COLD_STATE_REASON {
     pub const PciDeviceD3Cold_State_Disabled_BitIndex: Type = 1;
     pub const PciDeviceD3Cold_State_Enabled_BitIndex: Type = 2;
     pub const PciDeviceD3Cold_State_ParentRootPortS0WakeSupported_BitIndex: Type = 3;
+    pub const PciDeviceD3Cold_State_Disabled_Bridge_HackFlags_BitIndex: Type = 4;
     pub const PciDeviceD3Cold_Reason_Default_State_BitIndex: Type = 8;
     pub const PciDeviceD3Cold_Reason_INF_BitIndex: Type = 9;
     pub const PciDeviceD3Cold_Reason_Interface_Api_BitIndex: Type = 10;
@@ -113574,7 +115700,9 @@ pub mod _WHEA_ERROR_SOURCE_TYPE {
     pub const WheaErrSrcTypeBMC: Type = 14;
     pub const WheaErrSrcTypePMEM: Type = 15;
     pub const WheaErrSrcTypeDeviceDriver: Type = 16;
-    pub const WheaErrSrcTypeMax: Type = 17;
+    pub const WheaErrSrcTypeSea: Type = 17;
+    pub const WheaErrSrcTypeSei: Type = 18;
+    pub const WheaErrSrcTypeMax: Type = 19;
 }
 pub use self::_WHEA_ERROR_SOURCE_TYPE::Type as WHEA_ERROR_SOURCE_TYPE;
 pub type PWHEA_ERROR_SOURCE_TYPE = *mut _WHEA_ERROR_SOURCE_TYPE::Type;
@@ -131664,8 +133792,8 @@ pub type WHEA_ARM_PROCESSOR_ERROR_SECTION = _WHEA_ARM_PROCESSOR_ERROR_SECTION;
 pub type PWHEA_ARM_PROCESSOR_ERROR_SECTION = *mut _WHEA_ARM_PROCESSOR_ERROR_SECTION;
 pub mod _WHEA_RECOVERY_TYPE {
     pub type Type = ::core::ffi::c_int;
-    pub const WheaRecoveryTypeSrar: Type = 1;
-    pub const WheaRecoveryTypeSrao: Type = 2;
+    pub const WheaRecoveryTypeActionRequired: Type = 1;
+    pub const WheaRecoveryTypeActionOptional: Type = 2;
     pub const WheaRecoveryTypeMax: Type = 3;
 }
 pub use self::_WHEA_RECOVERY_TYPE::Type as WHEA_RECOVERY_TYPE;
@@ -131742,14 +133870,25 @@ impl _WHEA_RECOVERY_ACTION__bindgen_ty_1 {
         }
     }
     #[inline]
+    pub fn PoisonNotPresent(&self) -> ULONG {
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 1u8) as u32) }
+    }
+    #[inline]
+    pub fn set_PoisonNotPresent(&mut self, val: ULONG) {
+        unsafe {
+            let val: u32 = ::core::mem::transmute(val);
+            self._bitfield_1.set(4usize, 1u8, val as u64)
+        }
+    }
+    #[inline]
     pub fn Reserved(&self) -> ULONG {
-        unsafe { ::core::mem::transmute(self._bitfield_1.get(4usize, 29u8) as u32) }
+        unsafe { ::core::mem::transmute(self._bitfield_1.get(5usize, 28u8) as u32) }
     }
     #[inline]
     pub fn set_Reserved(&mut self, val: ULONG) {
         unsafe {
             let val: u32 = ::core::mem::transmute(val);
-            self._bitfield_1.set(4usize, 29u8, val as u64)
+            self._bitfield_1.set(5usize, 28u8, val as u64)
         }
     }
     #[inline]
@@ -131758,6 +133897,7 @@ impl _WHEA_RECOVERY_ACTION__bindgen_ty_1 {
         TerminateProcess: ULONG,
         ForwardedToVm: ULONG,
         MarkPageBad: ULONG,
+        PoisonNotPresent: ULONG,
         Reserved: ULONG,
     ) -> __BindgenBitfieldUnit<[u8; 5usize]> {
         let mut __bindgen_bitfield_unit: __BindgenBitfieldUnit<[u8; 5usize]> = Default::default();
@@ -131808,7 +133948,18 @@ impl _WHEA_RECOVERY_ACTION__bindgen_ty_1 {
         __bindgen_bitfield_unit
             .set(
                 4usize,
-                29u8,
+                1u8,
+                {
+                    let PoisonNotPresent: u32 = unsafe {
+                        ::core::mem::transmute(PoisonNotPresent)
+                    };
+                    PoisonNotPresent as u64
+                },
+            );
+        __bindgen_bitfield_unit
+            .set(
+                5usize,
+                28u8,
                 {
                     let Reserved: u32 = unsafe { ::core::mem::transmute(Reserved) };
                     Reserved as u64
@@ -131871,7 +134022,8 @@ pub mod _WHEA_RECOVERY_FAILURE_REASON {
     pub const WheaRecoveryFailureReasonStackOverflow: Type = 14;
     pub const WheaRecoveryFailureReasonUnexpectedFailure: Type = 15;
     pub const WheaRecoveryFailureReasonKernelWillPageFaultBCAtCurrentIrql: Type = 16;
-    pub const WheaRecoveryFailureReasonMax: Type = 17;
+    pub const WheaRecoveryFailureReasonFarNotValid: Type = 17;
+    pub const WheaRecoveryFailureReasonMax: Type = 18;
 }
 pub use self::_WHEA_RECOVERY_FAILURE_REASON::Type as WHEA_RECOVERY_FAILURE_REASON;
 pub type PWHEA_RECOVERY_FAILURE_REASON = *mut _WHEA_RECOVERY_FAILURE_REASON::Type;
@@ -135336,6 +137488,190 @@ fn bindgen_test_layout__WHEA_ARM_PROCESSOR_ERROR_CONTEXT_INFORMATION_HEADER() {
 }
 pub type WHEA_ARM_PROCESSOR_ERROR_CONTEXT_INFORMATION_HEADER = _WHEA_ARM_PROCESSOR_ERROR_CONTEXT_INFORMATION_HEADER;
 pub type PWHEA_ARM_PROCESSOR_ERROR_CONTEXT_INFORMATION_HEADER = *mut _WHEA_ARM_PROCESSOR_ERROR_CONTEXT_INFORMATION_HEADER;
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _WHEA_SEA_SECTION {
+    pub Esr: ULONG,
+    pub Far: ULONG64,
+    pub Par: ULONG64,
+    pub WasKernel: BOOLEAN,
+}
+#[test]
+fn bindgen_test_layout__WHEA_SEA_SECTION() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_SEA_SECTION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_SEA_SECTION>(),
+        21usize,
+        concat!("Size of: ", stringify!(_WHEA_SEA_SECTION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_SEA_SECTION>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_SEA_SECTION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Esr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEA_SECTION),
+            "::",
+            stringify!(Esr),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Far) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEA_SECTION),
+            "::",
+            stringify!(Far),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Par) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEA_SECTION),
+            "::",
+            stringify!(Par),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).WasKernel) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEA_SECTION),
+            "::",
+            stringify!(WasKernel),
+        ),
+    );
+}
+pub type WHEA_SEA_SECTION = _WHEA_SEA_SECTION;
+pub type PWHEA_SEA_SECTION = *mut _WHEA_SEA_SECTION;
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _WHEA_SEI_SECTION {
+    pub Esr: ULONG,
+    pub Far: ULONG64,
+}
+#[test]
+fn bindgen_test_layout__WHEA_SEI_SECTION() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_SEI_SECTION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_SEI_SECTION>(),
+        12usize,
+        concat!("Size of: ", stringify!(_WHEA_SEI_SECTION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_SEI_SECTION>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_SEI_SECTION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Esr) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEI_SECTION),
+            "::",
+            stringify!(Esr),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Far) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SEI_SECTION),
+            "::",
+            stringify!(Far),
+        ),
+    );
+}
+pub type WHEA_SEI_SECTION = _WHEA_SEI_SECTION;
+pub type PWHEA_SEI_SECTION = *mut _WHEA_SEI_SECTION;
+pub mod _WHEA_PCI_RECOVERY_SIGNAL {
+    pub type Type = ::core::ffi::c_int;
+    pub const WheaPciRecoverySignalUnknown: Type = 0;
+    pub const WheaPciRecoverySignalAer: Type = 1;
+    pub const WheaPciRecoverySignalDpc: Type = 2;
+}
+pub use self::_WHEA_PCI_RECOVERY_SIGNAL::Type as WHEA_PCI_RECOVERY_SIGNAL;
+pub type PWHEA_PCI_RECOVERY_SIGNAL = *mut _WHEA_PCI_RECOVERY_SIGNAL::Type;
+pub mod _WHEA_PCI_RECOVERY_STATUS {
+    pub type Type = ::core::ffi::c_int;
+    pub const WheaPciREcoveryStatusUnknown: Type = 0;
+    pub const WheaPciRecoveryStatusNoError: Type = 1;
+    pub const WheaPciRecoveryStatusLinkDisableTimeout: Type = 2;
+    pub const WheaPciRecoveryStatusLinkEnableTimeout: Type = 3;
+    pub const WheaPciRecoveryStatusRpBusyTimeout: Type = 4;
+    pub const WheaPciRecoveryStatusComplexTree: Type = 5;
+    pub const WheaPciRecoveryStatusBusNotFound: Type = 6;
+}
+pub use self::_WHEA_PCI_RECOVERY_STATUS::Type as WHEA_PCI_RECOVERY_STATUS;
+pub type PWHEA_PCI_RECOVERY_STATUS = *mut _WHEA_PCI_RECOVERY_STATUS::Type;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _WHEA_PCI_RECOVERY_SECTION {
+    pub SignalType: UINT8,
+    pub RecoveryAttempted: BOOLEAN,
+    pub RecoveryStatus: UINT8,
+}
+#[test]
+fn bindgen_test_layout__WHEA_PCI_RECOVERY_SECTION() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_PCI_RECOVERY_SECTION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_PCI_RECOVERY_SECTION>(),
+        3usize,
+        concat!("Size of: ", stringify!(_WHEA_PCI_RECOVERY_SECTION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_PCI_RECOVERY_SECTION>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_PCI_RECOVERY_SECTION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SignalType) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PCI_RECOVERY_SECTION),
+            "::",
+            stringify!(SignalType),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).RecoveryAttempted) as usize - ptr as usize
+        },
+        1usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PCI_RECOVERY_SECTION),
+            "::",
+            stringify!(RecoveryAttempted),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).RecoveryStatus) as usize - ptr as usize },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PCI_RECOVERY_SECTION),
+            "::",
+            stringify!(RecoveryStatus),
+        ),
+    );
+}
+pub type WHEA_PCI_RECOVERY_SECTION = _WHEA_PCI_RECOVERY_SECTION;
+pub type PWHEA_PCI_RECOVERY_SECTION = *mut _WHEA_PCI_RECOVERY_SECTION;
 pub mod _WHEA_ERROR_TYPE {
     pub type Type = ::core::ffi::c_int;
     pub const WheaErrTypeProcessor: Type = 0;
@@ -136285,6 +138621,20 @@ pub mod _WHEA_EVENT_LOG_ENTRY_ID {
     pub const WheaEventLogEntryIdMemoryAddDevice: Type = -2147483575;
     pub const WheaEventLogEntryIdMemoryRemoveDevice: Type = -2147483574;
     pub const WheaEventLogEntryIdMemorySummaryFailed: Type = -2147483573;
+    pub const WheaEventLogEntryIdPcieDpcError: Type = -2147483572;
+    pub const WheaEventLogEntryIdCpuBusesInitFailed: Type = -2147483571;
+    pub const WheaEventLogEntryIdPshedPluginInitFailed: Type = -2147483570;
+    pub const WheaEventLogEntryIdFailedAddToDefectList: Type = -2147483569;
+    pub const WheaEventLogEntryIdDefectListFull: Type = -2147483568;
+    pub const WheaEventLogEntryIdDefectListUEFIVarFailed: Type = -2147483567;
+    pub const WheaEventLogEntryIdDefectListCorrupt: Type = -2147483566;
+    pub const WheaEventLogEntryIdBadHestNotifyData: Type = -2147483565;
+    pub const WheaEventLogEntryIdSrasTableNotFound: Type = -2147483564;
+    pub const WheaEventLogEntryIdSrasTableError: Type = -2147483563;
+    pub const WheaEventLogEntryIdSrasTableEntries: Type = -2147483562;
+    pub const WheaEventLogEntryIdRowFailure: Type = -2147483561;
+    pub const WheaEventLogEntryIdCpusFrozen: Type = -2147483552;
+    pub const WheaEventLogEntryIdCpusFrozenNoCrashDump: Type = -2147483551;
     pub const WheaEventLogEntryIdPshedPiTraceLog: Type = -2147221488;
 }
 pub use self::_WHEA_EVENT_LOG_ENTRY_ID::Type as WHEA_EVENT_LOG_ENTRY_ID;
@@ -136743,6 +139093,82 @@ impl Default for _WHEAP_DEFERRED_EVENT {
 }
 pub type WHEAP_DEFERRED_EVENT = _WHEAP_DEFERRED_EVENT;
 pub type PWHEAP_DEFERRED_EVENT = *mut _WHEAP_DEFERRED_EVENT;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_BAD_HEST_NOTIFY_DATA_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub SourceId: USHORT,
+    pub Reserved: USHORT,
+    pub NotifyDesc: WHEA_NOTIFICATION_DESCRIPTOR,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_BAD_HEST_NOTIFY_DATA_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT>(),
+        64usize,
+        concat!("Size of: ", stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SourceId) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT),
+            "::",
+            stringify!(SourceId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        34usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NotifyDesc) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_BAD_HEST_NOTIFY_DATA_EVENT),
+            "::",
+            stringify!(NotifyDesc),
+        ),
+    );
+}
+impl Default for _WHEAP_BAD_HEST_NOTIFY_DATA_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_BAD_HEST_NOTIFY_DATA_EVENT = _WHEAP_BAD_HEST_NOTIFY_DATA_EVENT;
+pub type PWHEAP_BAD_HEST_NOTIFY_DATA_EVENT = *mut _WHEAP_BAD_HEST_NOTIFY_DATA_EVENT;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct _WHEAP_STARTED_REPORT_HW_ERROR {
@@ -139487,6 +141913,60 @@ impl Default for _WHEA_PSHED_PLUGIN_PLATFORM_SUPPORT_EVENT {
 }
 pub type WHEA_PSHED_PLUGIN_PLATFORM_SUPPORT_EVENT = _WHEA_PSHED_PLUGIN_PLATFORM_SUPPORT_EVENT;
 pub type PWHEA_PSHED_PLUGIN_PLATFORM_SUPPORT_EVENT = *mut _WHEA_PSHED_PLUGIN_PLATFORM_SUPPORT_EVENT;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub Status: NTSTATUS,
+}
+#[test]
+fn bindgen_test_layout__WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT>(),
+        36usize,
+        concat!("Size of: ", stringify!(_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Status) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT),
+            "::",
+            stringify!(Status),
+        ),
+    );
+}
+impl Default for _WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT = _WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT;
+pub type PWHEA_PSHED_PLUGIN_INIT_FAILED_EVENT = *mut _WHEA_PSHED_PLUGIN_INIT_FAILED_EVENT;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _WHEA_PSHED_PLUGIN_HEARTBEAT {
@@ -140261,6 +142741,7 @@ pub type PWHEA_BUGCHECK_RECOVERY_LOG_TYPE = *mut _WHEA_BUGCHECK_RECOVERY_LOG_TYP
 pub struct _WHEAP_EDPC_ENABLED_EVENT {
     pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
     pub eDPCEnabled: BOOLEAN,
+    pub eDPCRecovEnabled: BOOLEAN,
 }
 #[test]
 fn bindgen_test_layout__WHEAP_EDPC_ENABLED_EVENT() {
@@ -140268,7 +142749,7 @@ fn bindgen_test_layout__WHEAP_EDPC_ENABLED_EVENT() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_WHEAP_EDPC_ENABLED_EVENT>(),
-        33usize,
+        34usize,
         concat!("Size of: ", stringify!(_WHEAP_EDPC_ENABLED_EVENT)),
     );
     assert_eq!(
@@ -140296,6 +142777,18 @@ fn bindgen_test_layout__WHEAP_EDPC_ENABLED_EVENT() {
             stringify!(_WHEAP_EDPC_ENABLED_EVENT),
             "::",
             stringify!(eDPCEnabled),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).eDPCRecovEnabled) as usize - ptr as usize
+        },
+        33usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_EDPC_ENABLED_EVENT),
+            "::",
+            stringify!(eDPCRecovEnabled),
         ),
     );
 }
@@ -140405,6 +142898,178 @@ impl Default for _WHEA_SRAR_DETAIL_EVENT {
 }
 pub type WHEA_SRAR_DETAIL_EVENT = _WHEA_SRAR_DETAIL_EVENT;
 pub type PWHEA_SRAR_DETAIL_EVENT = *mut _WHEA_SRAR_DETAIL_EVENT;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_FAILED_ADD_DEFECT_LIST_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEA_FAILED_ADD_DEFECT_LIST_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_FAILED_ADD_DEFECT_LIST_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_FAILED_ADD_DEFECT_LIST_EVENT>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEA_FAILED_ADD_DEFECT_LIST_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_FAILED_ADD_DEFECT_LIST_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_FAILED_ADD_DEFECT_LIST_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_FAILED_ADD_DEFECT_LIST_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEA_FAILED_ADD_DEFECT_LIST_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_FAILED_ADD_DEFECT_LIST_EVENT = _WHEA_FAILED_ADD_DEFECT_LIST_EVENT;
+pub type PWHEA_FAILED_ADD_DEFECT_LIST_EVENT = *mut _WHEA_FAILED_ADD_DEFECT_LIST_EVENT;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT = _WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT;
+pub type PWHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT = *mut _WHEAP_PLUGIN_DEFECT_LIST_FULL_EVENT;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED = _WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED;
+pub type PWHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED = *mut _WHEAP_PLUGIN_DEFECT_LIST_UEFI_VAR_FAILED;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_PLUGIN_DEFECT_LIST_CORRUPT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_PLUGIN_DEFECT_LIST_CORRUPT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_PLUGIN_DEFECT_LIST_CORRUPT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEAP_PLUGIN_DEFECT_LIST_CORRUPT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_PLUGIN_DEFECT_LIST_CORRUPT = _WHEAP_PLUGIN_DEFECT_LIST_CORRUPT;
+pub type PWHEAP_PLUGIN_DEFECT_LIST_CORRUPT = *mut _WHEAP_PLUGIN_DEFECT_LIST_CORRUPT;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct _WHEAP_SPURIOUS_AER_EVENT {
@@ -140522,6 +143187,126 @@ impl Default for _WHEAP_SPURIOUS_AER_EVENT {
 }
 pub type WHEAP_SPURIOUS_AER_EVENT = _WHEAP_SPURIOUS_AER_EVENT;
 pub type PWHEAP_SPURIOUS_AER_EVENT = *mut _WHEAP_SPURIOUS_AER_EVENT;
+pub mod _WHEAP_DPC_ERROR_EVENT_TYPE {
+    pub type Type = ::core::ffi::c_int;
+    pub const WheapDpcErrNoErr: Type = 0;
+    pub const WheapDpcErrBusNotFound: Type = 1;
+    pub const WheapDpcErrDpcedSubtree: Type = 2;
+    pub const WheapDpcErrDeviceIdBad: Type = 3;
+    pub const WheapDpcErrResetFailed: Type = 4;
+    pub const WheapDpcErrNoChildren: Type = 5;
+}
+pub use self::_WHEAP_DPC_ERROR_EVENT_TYPE::Type as WHEAP_DPC_ERROR_EVENT_TYPE;
+pub type PWHEAP_DPC_ERROR_EVENT_TYPE = *mut _WHEAP_DPC_ERROR_EVENT_TYPE::Type;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_DPC_ERROR_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub ErrType: WHEAP_DPC_ERROR_EVENT_TYPE,
+    pub Bus: ULONG,
+    pub Device: ULONG,
+    pub Function: ULONG,
+    pub DeviceId: USHORT,
+    pub VendorId: USHORT,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_DPC_ERROR_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_DPC_ERROR_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_DPC_ERROR_EVENT>(),
+        52usize,
+        concat!("Size of: ", stringify!(_WHEAP_DPC_ERROR_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_DPC_ERROR_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_DPC_ERROR_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ErrType) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(ErrType),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Bus) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(Bus),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Device) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(Device),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Function) as usize - ptr as usize },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(Function),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).DeviceId) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(DeviceId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).VendorId) as usize - ptr as usize },
+        50usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_DPC_ERROR_EVENT),
+            "::",
+            stringify!(VendorId),
+        ),
+    );
+}
+impl Default for _WHEAP_DPC_ERROR_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_DPC_ERROR_EVENT = _WHEAP_DPC_ERROR_EVENT;
+pub type PWHEAP_DPC_ERROR_EVENT = *mut _WHEAP_DPC_ERROR_EVENT;
 pub mod _PSHED_PI_ERR_READING_PCIE_OVERRIDES {
     pub type Type = ::core::ffi::c_int;
     pub const PshedPiErrReadingPcieOverridesNoErr: Type = 0;
@@ -141389,6 +144174,60 @@ impl Default for _WHEA_MEMORY_THROTTLE_SUMMARY_FAILED_EVENT {
 }
 pub type WHEA_MEMORY_THROTTLE_SUMMARY_FAILED_EVENT = _WHEA_MEMORY_THROTTLE_SUMMARY_FAILED_EVENT;
 pub type PWHEA_MEMORY_THROTTLE_SUMMARY_FAILED_EVENT = *mut _WHEA_MEMORY_THROTTLE_SUMMARY_FAILED_EVENT;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub Status: NTSTATUS,
+}
+#[test]
+fn bindgen_test_layout__WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT>(),
+        36usize,
+        concat!("Size of: ", stringify!(_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Status) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT),
+            "::",
+            stringify!(Status),
+        ),
+    );
+}
+impl Default for _WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT = _WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT;
+pub type PWHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT = *mut _WHEA_PSHED_PI_CPU_BUSES_INIT_FAILED_EVENT;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _WHEA_PSHED_PI_TRACE_EVENT {
@@ -141443,6 +144282,461 @@ impl Default for _WHEA_PSHED_PI_TRACE_EVENT {
 }
 pub type WHEA_PSHED_PI_TRACE_EVENT = _WHEA_PSHED_PI_TRACE_EVENT;
 pub type PWHEA_PSHED_PI_TRACE_EVENT = *mut _WHEA_PSHED_PI_TRACE_EVENT;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_SRAS_TABLE_NOT_FOUND {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEA_SRAS_TABLE_NOT_FOUND() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_SRAS_TABLE_NOT_FOUND> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_SRAS_TABLE_NOT_FOUND>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEA_SRAS_TABLE_NOT_FOUND)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_SRAS_TABLE_NOT_FOUND>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_SRAS_TABLE_NOT_FOUND)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_NOT_FOUND),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEA_SRAS_TABLE_NOT_FOUND {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_SRAS_TABLE_NOT_FOUND = _WHEA_SRAS_TABLE_NOT_FOUND;
+pub type PWHEA_SRAS_TABLE_NOT_FOUND = *mut _WHEA_SRAS_TABLE_NOT_FOUND;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_SRAS_TABLE_ERROR {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+}
+#[test]
+fn bindgen_test_layout__WHEA_SRAS_TABLE_ERROR() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_SRAS_TABLE_ERROR> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_SRAS_TABLE_ERROR>(),
+        32usize,
+        concat!("Size of: ", stringify!(_WHEA_SRAS_TABLE_ERROR)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_SRAS_TABLE_ERROR>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_SRAS_TABLE_ERROR)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_ERROR),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+}
+impl Default for _WHEA_SRAS_TABLE_ERROR {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_SRAS_TABLE_ERROR = _WHEA_SRAS_TABLE_ERROR;
+pub type PWHEA_SRAS_TABLE_ERROR = *mut _WHEA_SRAS_TABLE_ERROR;
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _WHEA_ACPI_HEADER {
+    pub Signature: UINT32,
+    pub Length: UINT32,
+    pub Revision: UINT8,
+    pub Checksum: UINT8,
+    pub OemId: [UINT8; 6usize],
+    pub OemTableId: UINT64,
+    pub OemRevision: UINT32,
+    pub CreatorId: UINT32,
+    pub CreatorRevision: UINT32,
+}
+#[test]
+fn bindgen_test_layout__WHEA_ACPI_HEADER() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_ACPI_HEADER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_ACPI_HEADER>(),
+        36usize,
+        concat!("Size of: ", stringify!(_WHEA_ACPI_HEADER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_ACPI_HEADER>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_ACPI_HEADER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Signature) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(Signature),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Length) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(Length),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Revision) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(Revision),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Checksum) as usize - ptr as usize },
+        9usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(Checksum),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).OemId) as usize - ptr as usize },
+        10usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(OemId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).OemTableId) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(OemTableId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).OemRevision) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(OemRevision),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreatorId) as usize - ptr as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(CreatorId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreatorRevision) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ACPI_HEADER),
+            "::",
+            stringify!(CreatorRevision),
+        ),
+    );
+}
+pub type WHEA_ACPI_HEADER = _WHEA_ACPI_HEADER;
+pub type PWHEA_ACPI_HEADER = *mut _WHEA_ACPI_HEADER;
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _SIGNAL_REG_VALUE {
+    pub RegName: [UINT8; 32usize],
+    pub MsrAddr: UINT32,
+    pub Value: UINT64,
+}
+#[test]
+fn bindgen_test_layout__SIGNAL_REG_VALUE() {
+    const UNINIT: ::core::mem::MaybeUninit<_SIGNAL_REG_VALUE> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_SIGNAL_REG_VALUE>(),
+        44usize,
+        concat!("Size of: ", stringify!(_SIGNAL_REG_VALUE)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_SIGNAL_REG_VALUE>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_SIGNAL_REG_VALUE)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).RegName) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SIGNAL_REG_VALUE),
+            "::",
+            stringify!(RegName),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).MsrAddr) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SIGNAL_REG_VALUE),
+            "::",
+            stringify!(MsrAddr),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Value) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SIGNAL_REG_VALUE),
+            "::",
+            stringify!(Value),
+        ),
+    );
+}
+pub type SIGNAL_REG_VALUE = _SIGNAL_REG_VALUE;
+pub type PSIGNAL_REG_VALUE = *mut _SIGNAL_REG_VALUE;
+#[repr(C, packed)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _EFI_ACPI_RAS_SIGNAL_TABLE {
+    pub Header: WHEA_ACPI_HEADER,
+    pub NumberRecord: UINT32,
+    pub Entries: [SIGNAL_REG_VALUE; 1usize],
+}
+#[test]
+fn bindgen_test_layout__EFI_ACPI_RAS_SIGNAL_TABLE() {
+    const UNINIT: ::core::mem::MaybeUninit<_EFI_ACPI_RAS_SIGNAL_TABLE> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_EFI_ACPI_RAS_SIGNAL_TABLE>(),
+        84usize,
+        concat!("Size of: ", stringify!(_EFI_ACPI_RAS_SIGNAL_TABLE)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_EFI_ACPI_RAS_SIGNAL_TABLE>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_EFI_ACPI_RAS_SIGNAL_TABLE)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Header) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EFI_ACPI_RAS_SIGNAL_TABLE),
+            "::",
+            stringify!(Header),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NumberRecord) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EFI_ACPI_RAS_SIGNAL_TABLE),
+            "::",
+            stringify!(NumberRecord),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Entries) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_EFI_ACPI_RAS_SIGNAL_TABLE),
+            "::",
+            stringify!(Entries),
+        ),
+    );
+}
+pub type EFI_ACPI_RAS_SIGNAL_TABLE = _EFI_ACPI_RAS_SIGNAL_TABLE;
+pub type PEFI_ACPI_RAS_SIGNAL_TABLE = *mut _EFI_ACPI_RAS_SIGNAL_TABLE;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEA_SRAS_TABLE_ENTRIES_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub LogNumber: UINT32,
+    pub NumberSignals: UINT32,
+    pub Data: [UINT8; 1usize],
+}
+#[test]
+fn bindgen_test_layout__WHEA_SRAS_TABLE_ENTRIES_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_SRAS_TABLE_ENTRIES_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_SRAS_TABLE_ENTRIES_EVENT>(),
+        41usize,
+        concat!("Size of: ", stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_SRAS_TABLE_ENTRIES_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LogNumber) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT),
+            "::",
+            stringify!(LogNumber),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NumberSignals) as usize - ptr as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT),
+            "::",
+            stringify!(NumberSignals),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Data) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_SRAS_TABLE_ENTRIES_EVENT),
+            "::",
+            stringify!(Data),
+        ),
+    );
+}
+impl Default for _WHEA_SRAS_TABLE_ENTRIES_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_SRAS_TABLE_ENTRIES_EVENT = _WHEA_SRAS_TABLE_ENTRIES_EVENT;
+pub type PWHEA_SRAS_TABLE_ENTRIES_EVENT = *mut _WHEA_SRAS_TABLE_ENTRIES_EVENT;
+#[repr(C, packed)]
+#[derive(Copy, Clone)]
+pub struct _WHEAP_ROW_FAILURE_EVENT {
+    pub WheaEventLogEntry: WHEA_EVENT_LOG_ENTRY,
+    pub LowOrderPage: PFN_NUMBER,
+    pub HighOrderPage: PFN_NUMBER,
+}
+#[test]
+fn bindgen_test_layout__WHEAP_ROW_FAILURE_EVENT() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEAP_ROW_FAILURE_EVENT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEAP_ROW_FAILURE_EVENT>(),
+        48usize,
+        concat!("Size of: ", stringify!(_WHEAP_ROW_FAILURE_EVENT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEAP_ROW_FAILURE_EVENT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_WHEAP_ROW_FAILURE_EVENT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).WheaEventLogEntry) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_ROW_FAILURE_EVENT),
+            "::",
+            stringify!(WheaEventLogEntry),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LowOrderPage) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_ROW_FAILURE_EVENT),
+            "::",
+            stringify!(LowOrderPage),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).HighOrderPage) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEAP_ROW_FAILURE_EVENT),
+            "::",
+            stringify!(HighOrderPage),
+        ),
+    );
+}
+impl Default for _WHEAP_ROW_FAILURE_EVENT {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEAP_ROW_FAILURE_EVENT = _WHEAP_ROW_FAILURE_EVENT;
+pub type PWHEAP_ROW_FAILURE_EVENT = *mut _WHEAP_ROW_FAILURE_EVENT;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub union _WHEA_GENERIC_ERROR_BLOCKSTATUS {
@@ -142377,6 +145671,90 @@ impl Default for _WHEA_PACKET_LOG_DATA {
 }
 pub type WHEA_PACKET_LOG_DATA = _WHEA_PACKET_LOG_DATA;
 pub type PWHEA_PACKET_LOG_DATA = *mut _WHEA_PACKET_LOG_DATA;
+pub type _WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK = ::core::option::Option<
+    unsafe extern "C" fn(Context: UINT_PTR) -> BOOLEAN,
+>;
+pub type WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK = _WHEA_SIGNAL_HANDLER_OVERRIDE_CALLBACK;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS {
+    pub Type: WHEA_ERROR_SOURCE_TYPE,
+    pub MaxRawDataLength: ULONG,
+    pub NumRecordsToPreallocate: ULONG,
+    pub MaxSectionsPerRecord: ULONG,
+}
+#[test]
+fn bindgen_test_layout__WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS() {
+    const UNINIT: ::core::mem::MaybeUninit<_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS>(),
+        16usize,
+        concat!("Size of: ", stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Type) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS),
+            "::",
+            stringify!(Type),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MaxRawDataLength) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS),
+            "::",
+            stringify!(MaxRawDataLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).NumRecordsToPreallocate) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS),
+            "::",
+            stringify!(NumRecordsToPreallocate),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MaxSectionsPerRecord) as usize - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS),
+            "::",
+            stringify!(MaxSectionsPerRecord),
+        ),
+    );
+}
+impl Default for _WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS = _WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS;
+pub type PWHEA_ERROR_SOURCE_OVERRIDE_SETTINGS = *mut _WHEA_ERROR_SOURCE_OVERRIDE_SETTINGS;
 pub type PFN_WHEA_HIGH_IRQL_LOG_SEL_EVENT_HANDLER = ::core::option::Option<
     unsafe extern "C" fn(Context: PVOID, OsSelRecord: PIPMI_OS_SEL_RECORD) -> NTSTATUS,
 >;
@@ -146015,7 +149393,8 @@ pub mod _TOKEN_INFORMATION_CLASS {
     pub const TokenChildProcessFlags: Type = 45;
     pub const TokenIsLessPrivilegedAppContainer: Type = 46;
     pub const TokenIsSandboxed: Type = 47;
-    pub const MaxTokenInfoClass: Type = 48;
+    pub const TokenIsAppSilo: Type = 48;
+    pub const MaxTokenInfoClass: Type = 49;
 }
 pub use self::_TOKEN_INFORMATION_CLASS::Type as TOKEN_INFORMATION_CLASS;
 pub type PTOKEN_INFORMATION_CLASS = *mut _TOKEN_INFORMATION_CLASS::Type;
@@ -148185,18 +151564,194 @@ pub mod _RTL_MEMORY_TYPE {
     pub const MemoryType64KPage: Type = 2;
     pub const MemoryTypeLargePage: Type = 3;
     pub const MemoryTypeHugePage: Type = 4;
-    pub const MemoryTypeMax: Type = 5;
+    pub const MemoryTypeCustom: Type = 5;
+    pub const MemoryTypeMax: Type = 6;
 }
 pub use self::_RTL_MEMORY_TYPE::Type as RTL_MEMORY_TYPE;
 pub type PRTL_MEMORY_TYPE = *mut _RTL_MEMORY_TYPE::Type;
+pub mod _HEAP_MEMORY_INFO_CLASS {
+    pub type Type = ::core::ffi::c_int;
+    pub const HeapMemoryBasicInformation: Type = 0;
+}
+pub use self::_HEAP_MEMORY_INFO_CLASS::Type as HEAP_MEMORY_INFO_CLASS;
+pub type ALLOCATE_VIRTUAL_MEMORY_EX_CALLBACK = ::core::option::Option<
+    unsafe extern "C" fn(
+        CallbackContext: HANDLE,
+        ProcessHandle: HANDLE,
+        BaseAddress: *mut PVOID,
+        RegionSize: PSIZE_T,
+        AllocationType: ULONG,
+        PageProtection: ULONG,
+        ExtendedParameters: PMEM_EXTENDED_PARAMETER,
+        ExtendedParameterCount: ULONG,
+    ) -> NTSTATUS,
+>;
+pub type PALLOCATE_VIRTUAL_MEMORY_EX_CALLBACK = ALLOCATE_VIRTUAL_MEMORY_EX_CALLBACK;
+pub type FREE_VIRTUAL_MEMORY_EX_CALLBACK = ::core::option::Option<
+    unsafe extern "C" fn(
+        CallbackContext: HANDLE,
+        ProcessHandle: HANDLE,
+        BaseAddress: *mut PVOID,
+        RegionSize: PSIZE_T,
+        FreeType: ULONG,
+    ) -> NTSTATUS,
+>;
+pub type PFREE_VIRTUAL_MEMORY_EX_CALLBACK = FREE_VIRTUAL_MEMORY_EX_CALLBACK;
+pub type QUERY_VIRTUAL_MEMORY_CALLBACK = ::core::option::Option<
+    unsafe extern "C" fn(
+        CallbackContext: HANDLE,
+        ProcessHandle: HANDLE,
+        BaseAddress: PVOID,
+        MemoryInformationClass: HEAP_MEMORY_INFO_CLASS,
+        MemoryInformation: PVOID,
+        MemoryInformationLength: SIZE_T,
+        ReturnLength: PSIZE_T,
+    ) -> NTSTATUS,
+>;
+pub type PQUERY_VIRTUAL_MEMORY_CALLBACK = QUERY_VIRTUAL_MEMORY_CALLBACK;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct _RTL_SEGMENT_HEAP_VA_CALLBACKS {
+    pub CallbackContext: HANDLE,
+    pub AllocateVirtualMemory: PALLOCATE_VIRTUAL_MEMORY_EX_CALLBACK,
+    pub FreeVirtualMemory: PFREE_VIRTUAL_MEMORY_EX_CALLBACK,
+    pub QueryVirtualMemory: PQUERY_VIRTUAL_MEMORY_CALLBACK,
+}
+#[test]
+fn bindgen_test_layout__RTL_SEGMENT_HEAP_VA_CALLBACKS() {
+    const UNINIT: ::core::mem::MaybeUninit<_RTL_SEGMENT_HEAP_VA_CALLBACKS> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_RTL_SEGMENT_HEAP_VA_CALLBACKS>(),
+        32usize,
+        concat!("Size of: ", stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_RTL_SEGMENT_HEAP_VA_CALLBACKS>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CallbackContext) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS),
+            "::",
+            stringify!(CallbackContext),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).AllocateVirtualMemory) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS),
+            "::",
+            stringify!(AllocateVirtualMemory),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).FreeVirtualMemory) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS),
+            "::",
+            stringify!(FreeVirtualMemory),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).QueryVirtualMemory) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_VA_CALLBACKS),
+            "::",
+            stringify!(QueryVirtualMemory),
+        ),
+    );
+}
+impl Default for _RTL_SEGMENT_HEAP_VA_CALLBACKS {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type RTL_SEGMENT_HEAP_VA_CALLBACKS = _RTL_SEGMENT_HEAP_VA_CALLBACKS;
+pub type PRTL_SEGMENT_HEAP_VA_CALLBACKS = *mut _RTL_SEGMENT_HEAP_VA_CALLBACKS;
+#[repr(C)]
+#[derive(Copy, Clone)]
 pub struct _RTL_SEGMENT_HEAP_MEMORY_SOURCE {
     pub Flags: ULONG,
     pub MemoryTypeMask: ULONG,
     pub NumaNode: ULONG,
-    pub PartitionHandle: HANDLE,
+    pub __bindgen_anon_1: _RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1,
     pub Reserved: [SIZE_T; 2usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1 {
+    pub PartitionHandle: HANDLE,
+    pub Callbacks: *mut RTL_SEGMENT_HEAP_VA_CALLBACKS,
+}
+#[test]
+fn bindgen_test_layout__RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1>(),
+        8usize,
+        concat!("Size of: ", stringify!(_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).PartitionHandle) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1),
+            "::",
+            stringify!(PartitionHandle),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Callbacks) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1),
+            "::",
+            stringify!(Callbacks),
+        ),
+    );
+}
+impl Default for _RTL_SEGMENT_HEAP_MEMORY_SOURCE__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
 }
 #[test]
 fn bindgen_test_layout__RTL_SEGMENT_HEAP_MEMORY_SOURCE() {
@@ -148243,16 +151798,6 @@ fn bindgen_test_layout__RTL_SEGMENT_HEAP_MEMORY_SOURCE() {
         ),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).PartitionHandle) as usize - ptr as usize },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_RTL_SEGMENT_HEAP_MEMORY_SOURCE),
-            "::",
-            stringify!(PartitionHandle),
-        ),
-    );
-    assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
         24usize,
         concat!(
@@ -148275,7 +151820,7 @@ impl Default for _RTL_SEGMENT_HEAP_MEMORY_SOURCE {
 pub type RTL_SEGMENT_HEAP_MEMORY_SOURCE = _RTL_SEGMENT_HEAP_MEMORY_SOURCE;
 pub type PRTL_SEGMENT_HEAP_MEMORY_SOURCE = *mut _RTL_SEGMENT_HEAP_MEMORY_SOURCE;
 #[repr(C)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct _RTL_SEGMENT_HEAP_PARAMETERS {
     pub Version: USHORT,
     pub Size: USHORT,
@@ -151133,11 +154678,66 @@ pub struct _FILE_NOTIFY_EXTENDED_INFORMATION {
     pub AllocatedLength: LARGE_INTEGER,
     pub FileSize: LARGE_INTEGER,
     pub FileAttributes: ULONG,
-    pub ReparsePointTag: ULONG,
+    pub __bindgen_anon_1: _FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1,
     pub FileId: LARGE_INTEGER,
     pub ParentFileId: LARGE_INTEGER,
     pub FileNameLength: ULONG,
     pub FileName: [WCHAR; 1usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1 {
+    pub ReparsePointTag: ULONG,
+    pub EaSize: ULONG,
+}
+#[test]
+fn bindgen_test_layout__FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+}
+impl Default for _FILE_NOTIFY_EXTENDED_INFORMATION__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
 }
 #[test]
 fn bindgen_test_layout__FILE_NOTIFY_EXTENDED_INFORMATION() {
@@ -151246,16 +154846,6 @@ fn bindgen_test_layout__FILE_NOTIFY_EXTENDED_INFORMATION() {
         ),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
-        60usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(_FILE_NOTIFY_EXTENDED_INFORMATION),
-            "::",
-            stringify!(ReparsePointTag),
-        ),
-    );
-    assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
         64usize,
         concat!(
@@ -151307,6 +154897,256 @@ impl Default for _FILE_NOTIFY_EXTENDED_INFORMATION {
 }
 pub type FILE_NOTIFY_EXTENDED_INFORMATION = _FILE_NOTIFY_EXTENDED_INFORMATION;
 pub type PFILE_NOTIFY_EXTENDED_INFORMATION = *mut _FILE_NOTIFY_EXTENDED_INFORMATION;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _FILE_NOTIFY_FULL_INFORMATION {
+    pub NextEntryOffset: ULONG,
+    pub Action: ULONG,
+    pub CreationTime: LARGE_INTEGER,
+    pub LastModificationTime: LARGE_INTEGER,
+    pub LastChangeTime: LARGE_INTEGER,
+    pub LastAccessTime: LARGE_INTEGER,
+    pub AllocatedLength: LARGE_INTEGER,
+    pub FileSize: LARGE_INTEGER,
+    pub FileAttributes: ULONG,
+    pub __bindgen_anon_1: _FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1,
+    pub FileId: LARGE_INTEGER,
+    pub ParentFileId: LARGE_INTEGER,
+    pub FileNameLength: USHORT,
+    pub FileNameFlags: UCHAR,
+    pub Reserved: UCHAR,
+    pub FileName: [WCHAR; 1usize],
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1 {
+    pub ReparsePointTag: ULONG,
+    pub EaSize: ULONG,
+}
+#[test]
+fn bindgen_test_layout__FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1>(),
+        4usize,
+        concat!("Size of: ", stringify!(_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+}
+impl Default for _FILE_NOTIFY_FULL_INFORMATION__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__FILE_NOTIFY_FULL_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_NOTIFY_FULL_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_NOTIFY_FULL_INFORMATION>(),
+        88usize,
+        concat!("Size of: ", stringify!(_FILE_NOTIFY_FULL_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_NOTIFY_FULL_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_FILE_NOTIFY_FULL_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NextEntryOffset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(NextEntryOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Action) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(Action),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreationTime) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(CreationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).LastModificationTime) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(LastModificationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastChangeTime) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(LastChangeTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastAccessTime) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(LastAccessTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AllocatedLength) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(AllocatedLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileSize) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileAttributes) as usize - ptr as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileAttributes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ParentFileId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(ParentFileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameLength) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameFlags) as usize - ptr as usize },
+        82usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileNameFlags),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        83usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileName) as usize - ptr as usize },
+        84usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_NOTIFY_FULL_INFORMATION),
+            "::",
+            stringify!(FileName),
+        ),
+    );
+}
+impl Default for _FILE_NOTIFY_FULL_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type FILE_NOTIFY_FULL_INFORMATION = _FILE_NOTIFY_FULL_INFORMATION;
+pub type PFILE_NOTIFY_FULL_INFORMATION = *mut _FILE_NOTIFY_FULL_INFORMATION;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct _FILE_INFORMATION_DEFINITION {
@@ -152889,6 +156729,808 @@ impl Default for _FILE_ID_EXTD_BOTH_DIR_INFORMATION {
 }
 pub type FILE_ID_EXTD_BOTH_DIR_INFORMATION = _FILE_ID_EXTD_BOTH_DIR_INFORMATION;
 pub type PFILE_ID_EXTD_BOTH_DIR_INFORMATION = *mut _FILE_ID_EXTD_BOTH_DIR_INFORMATION;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _FILE_ID_64_EXTD_DIR_INFORMATION {
+    pub NextEntryOffset: ULONG,
+    pub FileIndex: ULONG,
+    pub CreationTime: LARGE_INTEGER,
+    pub LastAccessTime: LARGE_INTEGER,
+    pub LastWriteTime: LARGE_INTEGER,
+    pub ChangeTime: LARGE_INTEGER,
+    pub EndOfFile: LARGE_INTEGER,
+    pub AllocationSize: LARGE_INTEGER,
+    pub FileAttributes: ULONG,
+    pub FileNameLength: ULONG,
+    pub EaSize: ULONG,
+    pub ReparsePointTag: ULONG,
+    pub FileId: LARGE_INTEGER,
+    pub FileName: [WCHAR; 1usize],
+}
+#[test]
+fn bindgen_test_layout__FILE_ID_64_EXTD_DIR_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_ID_64_EXTD_DIR_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_ID_64_EXTD_DIR_INFORMATION>(),
+        88usize,
+        concat!("Size of: ", stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_ID_64_EXTD_DIR_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NextEntryOffset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(NextEntryOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileIndex) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileIndex),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreationTime) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(CreationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastAccessTime) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(LastAccessTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastWriteTime) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(LastWriteTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ChangeTime) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(ChangeTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EndOfFile) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(EndOfFile),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AllocationSize) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(AllocationSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileAttributes) as usize - ptr as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileAttributes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameLength) as usize - ptr as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileName) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileName),
+        ),
+    );
+}
+impl Default for _FILE_ID_64_EXTD_DIR_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type FILE_ID_64_EXTD_DIR_INFORMATION = _FILE_ID_64_EXTD_DIR_INFORMATION;
+pub type PFILE_ID_64_EXTD_DIR_INFORMATION = *mut _FILE_ID_64_EXTD_DIR_INFORMATION;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _FILE_ID_64_EXTD_BOTH_DIR_INFORMATION {
+    pub NextEntryOffset: ULONG,
+    pub FileIndex: ULONG,
+    pub CreationTime: LARGE_INTEGER,
+    pub LastAccessTime: LARGE_INTEGER,
+    pub LastWriteTime: LARGE_INTEGER,
+    pub ChangeTime: LARGE_INTEGER,
+    pub EndOfFile: LARGE_INTEGER,
+    pub AllocationSize: LARGE_INTEGER,
+    pub FileAttributes: ULONG,
+    pub FileNameLength: ULONG,
+    pub EaSize: ULONG,
+    pub ReparsePointTag: ULONG,
+    pub FileId: LARGE_INTEGER,
+    pub ShortNameLength: CCHAR,
+    pub ShortName: [WCHAR; 12usize],
+    pub FileName: [WCHAR; 1usize],
+}
+#[test]
+fn bindgen_test_layout__FILE_ID_64_EXTD_BOTH_DIR_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION>(),
+        112usize,
+        concat!("Size of: ", stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NextEntryOffset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(NextEntryOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileIndex) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileIndex),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreationTime) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(CreationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastAccessTime) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(LastAccessTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastWriteTime) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(LastWriteTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ChangeTime) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ChangeTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EndOfFile) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(EndOfFile),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AllocationSize) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(AllocationSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileAttributes) as usize - ptr as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileAttributes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameLength) as usize - ptr as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ShortNameLength) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ShortNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ShortName) as usize - ptr as usize },
+        82usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ShortName),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileName) as usize - ptr as usize },
+        106usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_64_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileName),
+        ),
+    );
+}
+impl Default for _FILE_ID_64_EXTD_BOTH_DIR_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type FILE_ID_64_EXTD_BOTH_DIR_INFORMATION = _FILE_ID_64_EXTD_BOTH_DIR_INFORMATION;
+pub type PFILE_ID_64_EXTD_BOTH_DIR_INFORMATION = *mut _FILE_ID_64_EXTD_BOTH_DIR_INFORMATION;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _FILE_ID_ALL_EXTD_DIR_INFORMATION {
+    pub NextEntryOffset: ULONG,
+    pub FileIndex: ULONG,
+    pub CreationTime: LARGE_INTEGER,
+    pub LastAccessTime: LARGE_INTEGER,
+    pub LastWriteTime: LARGE_INTEGER,
+    pub ChangeTime: LARGE_INTEGER,
+    pub EndOfFile: LARGE_INTEGER,
+    pub AllocationSize: LARGE_INTEGER,
+    pub FileAttributes: ULONG,
+    pub FileNameLength: ULONG,
+    pub EaSize: ULONG,
+    pub ReparsePointTag: ULONG,
+    pub FileId: LARGE_INTEGER,
+    pub FileId128: FILE_ID_128,
+    pub FileName: [WCHAR; 1usize],
+}
+#[test]
+fn bindgen_test_layout__FILE_ID_ALL_EXTD_DIR_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_ID_ALL_EXTD_DIR_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_ID_ALL_EXTD_DIR_INFORMATION>(),
+        104usize,
+        concat!("Size of: ", stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_ID_ALL_EXTD_DIR_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NextEntryOffset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(NextEntryOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileIndex) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileIndex),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreationTime) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(CreationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastAccessTime) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(LastAccessTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastWriteTime) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(LastWriteTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ChangeTime) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(ChangeTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EndOfFile) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(EndOfFile),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AllocationSize) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(AllocationSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileAttributes) as usize - ptr as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileAttributes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameLength) as usize - ptr as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId128) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileId128),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileName) as usize - ptr as usize },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_DIR_INFORMATION),
+            "::",
+            stringify!(FileName),
+        ),
+    );
+}
+impl Default for _FILE_ID_ALL_EXTD_DIR_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type FILE_ID_ALL_EXTD_DIR_INFORMATION = _FILE_ID_ALL_EXTD_DIR_INFORMATION;
+pub type PFILE_ID_ALL_EXTD_DIR_INFORMATION = *mut _FILE_ID_ALL_EXTD_DIR_INFORMATION;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION {
+    pub NextEntryOffset: ULONG,
+    pub FileIndex: ULONG,
+    pub CreationTime: LARGE_INTEGER,
+    pub LastAccessTime: LARGE_INTEGER,
+    pub LastWriteTime: LARGE_INTEGER,
+    pub ChangeTime: LARGE_INTEGER,
+    pub EndOfFile: LARGE_INTEGER,
+    pub AllocationSize: LARGE_INTEGER,
+    pub FileAttributes: ULONG,
+    pub FileNameLength: ULONG,
+    pub EaSize: ULONG,
+    pub ReparsePointTag: ULONG,
+    pub FileId: LARGE_INTEGER,
+    pub FileId128: FILE_ID_128,
+    pub ShortNameLength: CCHAR,
+    pub ShortName: [WCHAR; 12usize],
+    pub FileName: [WCHAR; 1usize],
+}
+#[test]
+fn bindgen_test_layout__FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION>(),
+        128usize,
+        concat!("Size of: ", stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).NextEntryOffset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(NextEntryOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileIndex) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileIndex),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CreationTime) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(CreationTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastAccessTime) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(LastAccessTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).LastWriteTime) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(LastWriteTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ChangeTime) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ChangeTime),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EndOfFile) as usize - ptr as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(EndOfFile),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).AllocationSize) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(AllocationSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileAttributes) as usize - ptr as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileAttributes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileNameLength) as usize - ptr as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EaSize) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(EaSize),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReparsePointTag) as usize - ptr as usize },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ReparsePointTag),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId) as usize - ptr as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileId),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileId128) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileId128),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ShortNameLength) as usize - ptr as usize },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ShortNameLength),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ShortName) as usize - ptr as usize },
+        98usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(ShortName),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FileName) as usize - ptr as usize },
+        122usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION),
+            "::",
+            stringify!(FileName),
+        ),
+    );
+}
+impl Default for _FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION = _FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION;
+pub type PFILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION = *mut _FILE_ID_ALL_EXTD_BOTH_DIR_INFORMATION;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _FILE_OBJECTID_INFORMATION {
@@ -155402,7 +160044,7 @@ fn bindgen_test_layout__FILE_REMOTE_PROTOCOL_INFORMATION__bindgen_ty_2__bindgen_
 #[derive(Debug, Default, Copy, Clone)]
 pub struct _FILE_REMOTE_PROTOCOL_INFORMATION__bindgen_ty_2__bindgen_ty_1__bindgen_ty_2 {
     pub Capabilities: ULONG,
-    pub CachingFlags: ULONG,
+    pub ShareFlags: ULONG,
     pub ShareType: UCHAR,
     pub Reserved0: [UCHAR; 3usize],
     pub Reserved1: ULONG,
@@ -155450,7 +160092,7 @@ fn bindgen_test_layout__FILE_REMOTE_PROTOCOL_INFORMATION__bindgen_ty_2__bindgen_
         ),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).CachingFlags) as usize - ptr as usize },
+        unsafe { ::core::ptr::addr_of!((*ptr).ShareFlags) as usize - ptr as usize },
         4usize,
         concat!(
             "Offset of field: ",
@@ -155458,7 +160100,7 @@ fn bindgen_test_layout__FILE_REMOTE_PROTOCOL_INFORMATION__bindgen_ty_2__bindgen_
                 _FILE_REMOTE_PROTOCOL_INFORMATION__bindgen_ty_2__bindgen_ty_1__bindgen_ty_2
             ),
             "::",
-            stringify!(CachingFlags),
+            stringify!(ShareFlags),
         ),
     );
     assert_eq!(
@@ -156236,6 +160878,38 @@ fn bindgen_test_layout__FILE_FS_DATA_COPY_INFORMATION() {
 pub type FILE_FS_DATA_COPY_INFORMATION = _FILE_FS_DATA_COPY_INFORMATION;
 pub type PFILE_FS_DATA_COPY_INFORMATION = *mut _FILE_FS_DATA_COPY_INFORMATION;
 #[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _FILE_FS_GUID_INFORMATION {
+    pub FsGuid: GUID,
+}
+#[test]
+fn bindgen_test_layout__FILE_FS_GUID_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_FILE_FS_GUID_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_FILE_FS_GUID_INFORMATION>(),
+        16usize,
+        concat!("Size of: ", stringify!(_FILE_FS_GUID_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_FILE_FS_GUID_INFORMATION>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_FILE_FS_GUID_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).FsGuid) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_FILE_FS_GUID_INFORMATION),
+            "::",
+            stringify!(FsGuid),
+        ),
+    );
+}
+pub type FILE_FS_GUID_INFORMATION = _FILE_FS_GUID_INFORMATION;
+pub type PFILE_FS_GUID_INFORMATION = *mut _FILE_FS_GUID_INFORMATION;
+#[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _FILE_END_OF_FILE_INFORMATION_EX {
     pub EndOfFile: LARGE_INTEGER,
@@ -156753,7 +161427,9 @@ pub struct REFS_VOLUME_DATA_BUFFER {
     pub FastTierDataFillRatio: USHORT,
     pub SlowTierDataFillRatio: USHORT,
     pub DestagesFastTierToSlowTierRate: ULONG,
-    pub Reserved: [LARGE_INTEGER; 9usize],
+    pub MetadataChecksumType: USHORT,
+    pub Reserved0: [UCHAR; 6usize],
+    pub Reserved: [LARGE_INTEGER; 8usize],
 }
 #[test]
 fn bindgen_test_layout_REFS_VOLUME_DATA_BUFFER() {
@@ -156934,8 +161610,30 @@ fn bindgen_test_layout_REFS_VOLUME_DATA_BUFFER() {
         ),
     );
     assert_eq!(
-        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MetadataChecksumType) as usize - ptr as usize
+        },
         80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(REFS_VOLUME_DATA_BUFFER),
+            "::",
+            stringify!(MetadataChecksumType),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved0) as usize - ptr as usize },
+        82usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(REFS_VOLUME_DATA_BUFFER),
+            "::",
+            stringify!(Reserved0),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        88usize,
         concat!(
             "Offset of field: ",
             stringify!(REFS_VOLUME_DATA_BUFFER),
@@ -167795,6 +172493,85 @@ fn bindgen_test_layout__CSV_QUERY_VOLUME_ID() {
 }
 pub type CSV_QUERY_VOLUME_ID = _CSV_QUERY_VOLUME_ID;
 pub type PCSV_QUERY_VOLUME_ID = *mut _CSV_QUERY_VOLUME_ID;
+pub mod _LMR_QUERY_INFO_CLASS {
+    pub type Type = ::core::ffi::c_int;
+    pub const LMRQuerySessionInfo: Type = 1;
+}
+pub use self::_LMR_QUERY_INFO_CLASS::Type as LMR_QUERY_INFO_CLASS;
+pub type PLMR_QUERY_INFO_CLASS = *mut _LMR_QUERY_INFO_CLASS::Type;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _LMR_QUERY_INFO_PARAM {
+    pub Operation: LMR_QUERY_INFO_CLASS,
+}
+#[test]
+fn bindgen_test_layout__LMR_QUERY_INFO_PARAM() {
+    const UNINIT: ::core::mem::MaybeUninit<_LMR_QUERY_INFO_PARAM> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LMR_QUERY_INFO_PARAM>(),
+        4usize,
+        concat!("Size of: ", stringify!(_LMR_QUERY_INFO_PARAM)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LMR_QUERY_INFO_PARAM>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_LMR_QUERY_INFO_PARAM)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Operation) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LMR_QUERY_INFO_PARAM),
+            "::",
+            stringify!(Operation),
+        ),
+    );
+}
+impl Default for _LMR_QUERY_INFO_PARAM {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type LMR_QUERY_INFO_PARAM = _LMR_QUERY_INFO_PARAM;
+pub type PLMR_QUERY_INFO_PARAM = *mut _LMR_QUERY_INFO_PARAM;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LMR_QUERY_SESSION_INFO {
+    pub SessionId: UINT64,
+}
+#[test]
+fn bindgen_test_layout__LMR_QUERY_SESSION_INFO() {
+    const UNINIT: ::core::mem::MaybeUninit<_LMR_QUERY_SESSION_INFO> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LMR_QUERY_SESSION_INFO>(),
+        8usize,
+        concat!("Size of: ", stringify!(_LMR_QUERY_SESSION_INFO)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LMR_QUERY_SESSION_INFO>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LMR_QUERY_SESSION_INFO)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SessionId) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LMR_QUERY_SESSION_INFO),
+            "::",
+            stringify!(SessionId),
+        ),
+    );
+}
+pub type LMR_QUERY_SESSION_INFO = _LMR_QUERY_SESSION_INFO;
+pub type PLMR_QUERY_SESSION_INFO = *mut _LMR_QUERY_SESSION_INFO;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct _CSV_QUERY_VETO_FILE_DIRECT_IO_OUTPUT {
@@ -176174,54 +180951,54 @@ pub struct _VOLUME_REFS_INFO_BUFFER {
     pub CachePopulationUpdatesCounter: LONG,
     pub CacheWriteThroughUpdatesCounter: LONG,
     pub MaxCacheTransactionsOutstanding: LONG,
-    pub DataWritesReallocationCount: LONG,
-    pub DataInPlaceWriteCount: LONG,
-    pub MetadataAllocationsFastTierCount: LONG,
-    pub MetadataAllocationsSlowTierCount: LONG,
-    pub DataAllocationsFastTierCount: LONG,
-    pub DataAllocationsSlowTierCount: LONG,
-    pub DestagesSlowTierToFastTier: LONG,
-    pub DestagesFastTierToSlowTier: LONG,
+    pub DataWritesReallocationCount: LONGLONG,
+    pub DataInPlaceWriteCount: LONGLONG,
+    pub MetadataAllocationsFastTierCount: LONGLONG,
+    pub MetadataAllocationsSlowTierCount: LONGLONG,
+    pub DataAllocationsFastTierCount: LONGLONG,
+    pub DataAllocationsSlowTierCount: LONGLONG,
+    pub DestagesSlowTierToFastTier: LONGLONG,
+    pub DestagesFastTierToSlowTier: LONGLONG,
     pub SlowTierDataFillRatio: LONG,
     pub FastTierDataFillRatio: LONG,
     pub SlowTierMetadataFillRatio: LONG,
     pub FastTierMetadataFillRatio: LONG,
-    pub SlowToFastDestageReadLatency: LONG,
+    pub SlowToFastDestageReadLatency: LONGLONG,
     pub SlowToFastDestageReadLatencyBase: LONG,
-    pub SlowToFastDestageWriteLatency: LONG,
+    pub SlowToFastDestageWriteLatency: LONGLONG,
     pub SlowToFastDestageWriteLatencyBase: LONG,
-    pub FastToSlowDestageReadLatency: LONG,
+    pub FastToSlowDestageReadLatency: LONGLONG,
     pub FastToSlowDestageReadLatencyBase: LONG,
-    pub FastToSlowDestageWriteLatency: LONG,
+    pub FastToSlowDestageWriteLatency: LONGLONG,
     pub FastToSlowDestageWriteLatencyBase: LONG,
-    pub SlowTierContainerFillRatio: LONG,
+    pub SlowTierContainerFillRatio: LONGLONG,
     pub SlowTierContainerFillRatioBase: LONG,
-    pub FastTierContainerFillRatio: LONG,
+    pub FastTierContainerFillRatio: LONGLONG,
     pub FastTierContainerFillRatioBase: LONG,
-    pub TreeUpdateLatency: LONG,
-    pub TreeUpdateLatencyBase: LONG,
-    pub CheckpointLatency: LONG,
-    pub CheckpointLatencyBase: LONG,
-    pub TreeUpdateCount: LONG,
-    pub CheckpointCount: LONG,
-    pub LogWriteCount: LONG,
+    pub Unused1: LONG,
+    pub Unused2: LONG,
+    pub Unused3: LONG,
+    pub Unused4: LONG,
+    pub TreeUpdateCount: LONGLONG,
+    pub CheckpointCount: LONGLONG,
+    pub LogWriteCount: LONGLONG,
     pub LogFillRatio: LONG,
     pub ReadCacheInvalidationsForOverwrite: LONG,
     pub ReadCacheInvalidationsForReuse: LONG,
     pub ReadCacheInvalidationsGeneral: LONG,
     pub ReadCacheChecksOnMount: LONG,
     pub ReadCacheIssuesOnMount: LONG,
-    pub TrimLatency: LONG,
+    pub TrimLatency: LONGLONG,
     pub TrimLatencyBase: LONG,
-    pub DataCompactionCount: LONG,
-    pub CompactionReadLatency: LONG,
+    pub DataCompactionCount: LONGLONG,
+    pub CompactionReadLatency: LONGLONG,
     pub CompactionReadLatencyBase: LONG,
-    pub CompactionWriteLatency: LONG,
+    pub CompactionWriteLatency: LONGLONG,
     pub CompactionWriteLatencyBase: LONG,
     pub DataInPlaceWriteClusterCount: LARGE_INTEGER,
     pub CompactionFailedDueToIneligibleContainer: LONG,
     pub CompactionFailedDueToMaxFragmentation: LONG,
-    pub CompactedContainerFillRatio: LONG,
+    pub CompactedContainerFillRatio: LONGLONG,
     pub CompactedContainerFillRatioBase: LONG,
     pub ContainerMoveRetryCount: LONG,
     pub ContainerMoveFailedDueToIneligibleContainer: LONG,
@@ -176230,6 +181007,22 @@ pub struct _VOLUME_REFS_INFO_BUFFER {
     pub NumberOfDirtyMetadataPages: LARGE_INTEGER,
     pub NumberOfDirtyTableListEntries: LONG,
     pub NumberOfDeleteQueueEntries: LONG,
+    pub MAAFilteredViewSize: LONG,
+    pub MAAFilteredViewInsertions: LONG,
+    pub MAAFilteredViewDeletions: LONG,
+    pub MAAFilteredViewCollisions: LONG,
+    pub MAAFilteredViewPurges: LONG,
+    pub MAARegionsVisitedPerAllocationSum: LONGLONG,
+    pub MAARegionsVisitedPerAllocationBase: LONG,
+    pub MAAMaxRegionsVisitedPerAllocation: LONG,
+    pub TreeUpdateLatencyExclusive: LONGLONG,
+    pub TreeUpdateLatencyTotal: LONGLONG,
+    pub TreeUpdateLatencyBase: LONG,
+    pub CheckpointLatencyTreeUpdateExclusive: LONGLONG,
+    pub CheckpointLatencyTreeUpdateTotal: LONGLONG,
+    pub CheckpointLatencyTreeUpdateBase: LONG,
+    pub CheckpointLatencyTotal: LONGLONG,
+    pub CheckpointLatencyTotalBase: LONG,
 }
 #[test]
 fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
@@ -176237,7 +181030,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_VOLUME_REFS_INFO_BUFFER>(),
-        376usize,
+        608usize,
         concat!("Size of: ", stringify!(_VOLUME_REFS_INFO_BUFFER)),
     );
     assert_eq!(
@@ -176530,7 +181323,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DataWritesReallocationCount) as usize
                 - ptr as usize
         },
-        140usize,
+        144usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176542,7 +181335,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).DataInPlaceWriteCount) as usize - ptr as usize
         },
-        144usize,
+        152usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176555,7 +181348,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).MetadataAllocationsFastTierCount) as usize
                 - ptr as usize
         },
-        148usize,
+        160usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176568,7 +181361,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).MetadataAllocationsSlowTierCount) as usize
                 - ptr as usize
         },
-        152usize,
+        168usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176581,7 +181374,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DataAllocationsFastTierCount) as usize
                 - ptr as usize
         },
-        156usize,
+        176usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176594,7 +181387,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DataAllocationsSlowTierCount) as usize
                 - ptr as usize
         },
-        160usize,
+        184usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176607,7 +181400,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DestagesSlowTierToFastTier) as usize
                 - ptr as usize
         },
-        164usize,
+        192usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176620,7 +181413,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DestagesFastTierToSlowTier) as usize
                 - ptr as usize
         },
-        168usize,
+        200usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176632,7 +181425,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).SlowTierDataFillRatio) as usize - ptr as usize
         },
-        172usize,
+        208usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176644,7 +181437,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).FastTierDataFillRatio) as usize - ptr as usize
         },
-        176usize,
+        212usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176657,7 +181450,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowTierMetadataFillRatio) as usize
                 - ptr as usize
         },
-        180usize,
+        216usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176670,7 +181463,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastTierMetadataFillRatio) as usize
                 - ptr as usize
         },
-        184usize,
+        220usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176683,7 +181476,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowToFastDestageReadLatency) as usize
                 - ptr as usize
         },
-        188usize,
+        224usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176696,7 +181489,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowToFastDestageReadLatencyBase) as usize
                 - ptr as usize
         },
-        192usize,
+        232usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176709,7 +181502,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowToFastDestageWriteLatency) as usize
                 - ptr as usize
         },
-        196usize,
+        240usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176722,7 +181515,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowToFastDestageWriteLatencyBase) as usize
                 - ptr as usize
         },
-        200usize,
+        248usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176735,7 +181528,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastToSlowDestageReadLatency) as usize
                 - ptr as usize
         },
-        204usize,
+        256usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176748,7 +181541,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastToSlowDestageReadLatencyBase) as usize
                 - ptr as usize
         },
-        208usize,
+        264usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176761,7 +181554,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastToSlowDestageWriteLatency) as usize
                 - ptr as usize
         },
-        212usize,
+        272usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176774,7 +181567,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastToSlowDestageWriteLatencyBase) as usize
                 - ptr as usize
         },
-        216usize,
+        280usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176787,7 +181580,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowTierContainerFillRatio) as usize
                 - ptr as usize
         },
-        220usize,
+        288usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176800,7 +181593,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).SlowTierContainerFillRatioBase) as usize
                 - ptr as usize
         },
-        224usize,
+        296usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176813,7 +181606,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastTierContainerFillRatio) as usize
                 - ptr as usize
         },
-        228usize,
+        304usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176826,7 +181619,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).FastTierContainerFillRatioBase) as usize
                 - ptr as usize
         },
-        232usize,
+        312usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176835,56 +181628,48 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         ),
     );
     assert_eq!(
-        unsafe {
-            ::core::ptr::addr_of!((*ptr).TreeUpdateLatency) as usize - ptr as usize
-        },
-        236usize,
+        unsafe { ::core::ptr::addr_of!((*ptr).Unused1) as usize - ptr as usize },
+        316usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
             "::",
-            stringify!(TreeUpdateLatency),
+            stringify!(Unused1),
         ),
     );
     assert_eq!(
-        unsafe {
-            ::core::ptr::addr_of!((*ptr).TreeUpdateLatencyBase) as usize - ptr as usize
-        },
-        240usize,
+        unsafe { ::core::ptr::addr_of!((*ptr).Unused2) as usize - ptr as usize },
+        320usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
             "::",
-            stringify!(TreeUpdateLatencyBase),
+            stringify!(Unused2),
         ),
     );
     assert_eq!(
-        unsafe {
-            ::core::ptr::addr_of!((*ptr).CheckpointLatency) as usize - ptr as usize
-        },
-        244usize,
+        unsafe { ::core::ptr::addr_of!((*ptr).Unused3) as usize - ptr as usize },
+        324usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
             "::",
-            stringify!(CheckpointLatency),
+            stringify!(Unused3),
         ),
     );
     assert_eq!(
-        unsafe {
-            ::core::ptr::addr_of!((*ptr).CheckpointLatencyBase) as usize - ptr as usize
-        },
-        248usize,
+        unsafe { ::core::ptr::addr_of!((*ptr).Unused4) as usize - ptr as usize },
+        328usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
             "::",
-            stringify!(CheckpointLatencyBase),
+            stringify!(Unused4),
         ),
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).TreeUpdateCount) as usize - ptr as usize },
-        252usize,
+        336usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176894,7 +181679,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).CheckpointCount) as usize - ptr as usize },
-        256usize,
+        344usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176904,7 +181689,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).LogWriteCount) as usize - ptr as usize },
-        260usize,
+        352usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176914,7 +181699,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).LogFillRatio) as usize - ptr as usize },
-        264usize,
+        360usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176927,7 +181712,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).ReadCacheInvalidationsForOverwrite) as usize
                 - ptr as usize
         },
-        268usize,
+        364usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176940,7 +181725,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).ReadCacheInvalidationsForReuse) as usize
                 - ptr as usize
         },
-        272usize,
+        368usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176953,7 +181738,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).ReadCacheInvalidationsGeneral) as usize
                 - ptr as usize
         },
-        276usize,
+        372usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176965,7 +181750,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).ReadCacheChecksOnMount) as usize - ptr as usize
         },
-        280usize,
+        376usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176977,7 +181762,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).ReadCacheIssuesOnMount) as usize - ptr as usize
         },
-        284usize,
+        380usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176987,7 +181772,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).TrimLatency) as usize - ptr as usize },
-        288usize,
+        384usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -176997,7 +181782,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
     );
     assert_eq!(
         unsafe { ::core::ptr::addr_of!((*ptr).TrimLatencyBase) as usize - ptr as usize },
-        292usize,
+        392usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177009,7 +181794,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).DataCompactionCount) as usize - ptr as usize
         },
-        296usize,
+        400usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177021,7 +181806,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).CompactionReadLatency) as usize - ptr as usize
         },
-        300usize,
+        408usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177034,7 +181819,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactionReadLatencyBase) as usize
                 - ptr as usize
         },
-        304usize,
+        416usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177046,7 +181831,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).CompactionWriteLatency) as usize - ptr as usize
         },
-        308usize,
+        424usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177059,7 +181844,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactionWriteLatencyBase) as usize
                 - ptr as usize
         },
-        312usize,
+        432usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177072,7 +181857,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).DataInPlaceWriteClusterCount) as usize
                 - ptr as usize
         },
-        320usize,
+        440usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177085,7 +181870,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactionFailedDueToIneligibleContainer)
                 as usize - ptr as usize
         },
-        328usize,
+        448usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177098,7 +181883,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactionFailedDueToMaxFragmentation) as usize
                 - ptr as usize
         },
-        332usize,
+        452usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177111,7 +181896,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactedContainerFillRatio) as usize
                 - ptr as usize
         },
-        336usize,
+        456usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177124,7 +181909,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).CompactedContainerFillRatioBase) as usize
                 - ptr as usize
         },
-        340usize,
+        464usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177136,7 +181921,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).ContainerMoveRetryCount) as usize - ptr as usize
         },
-        344usize,
+        468usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177149,7 +181934,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).ContainerMoveFailedDueToIneligibleContainer)
                 as usize - ptr as usize
         },
-        348usize,
+        472usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177161,7 +181946,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
         unsafe {
             ::core::ptr::addr_of!((*ptr).CompactionFailureCount) as usize - ptr as usize
         },
-        352usize,
+        476usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177174,7 +181959,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).ContainerMoveFailureCount) as usize
                 - ptr as usize
         },
-        356usize,
+        480usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177187,7 +181972,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).NumberOfDirtyMetadataPages) as usize
                 - ptr as usize
         },
-        360usize,
+        488usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177200,7 +181985,7 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).NumberOfDirtyTableListEntries) as usize
                 - ptr as usize
         },
-        368usize,
+        496usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
@@ -177213,12 +181998,215 @@ fn bindgen_test_layout__VOLUME_REFS_INFO_BUFFER() {
             ::core::ptr::addr_of!((*ptr).NumberOfDeleteQueueEntries) as usize
                 - ptr as usize
         },
-        372usize,
+        500usize,
         concat!(
             "Offset of field: ",
             stringify!(_VOLUME_REFS_INFO_BUFFER),
             "::",
             stringify!(NumberOfDeleteQueueEntries),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAFilteredViewSize) as usize - ptr as usize
+        },
+        504usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAFilteredViewSize),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAFilteredViewInsertions) as usize
+                - ptr as usize
+        },
+        508usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAFilteredViewInsertions),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAFilteredViewDeletions) as usize
+                - ptr as usize
+        },
+        512usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAFilteredViewDeletions),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAFilteredViewCollisions) as usize
+                - ptr as usize
+        },
+        516usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAFilteredViewCollisions),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAFilteredViewPurges) as usize - ptr as usize
+        },
+        520usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAFilteredViewPurges),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAARegionsVisitedPerAllocationSum) as usize
+                - ptr as usize
+        },
+        528usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAARegionsVisitedPerAllocationSum),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAARegionsVisitedPerAllocationBase) as usize
+                - ptr as usize
+        },
+        536usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAARegionsVisitedPerAllocationBase),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MAAMaxRegionsVisitedPerAllocation) as usize
+                - ptr as usize
+        },
+        540usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(MAAMaxRegionsVisitedPerAllocation),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TreeUpdateLatencyExclusive) as usize
+                - ptr as usize
+        },
+        544usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(TreeUpdateLatencyExclusive),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TreeUpdateLatencyTotal) as usize - ptr as usize
+        },
+        552usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(TreeUpdateLatencyTotal),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TreeUpdateLatencyBase) as usize - ptr as usize
+        },
+        560usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(TreeUpdateLatencyBase),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CheckpointLatencyTreeUpdateExclusive) as usize
+                - ptr as usize
+        },
+        568usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(CheckpointLatencyTreeUpdateExclusive),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CheckpointLatencyTreeUpdateTotal) as usize
+                - ptr as usize
+        },
+        576usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(CheckpointLatencyTreeUpdateTotal),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CheckpointLatencyTreeUpdateBase) as usize
+                - ptr as usize
+        },
+        584usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(CheckpointLatencyTreeUpdateBase),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CheckpointLatencyTotal) as usize - ptr as usize
+        },
+        592usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(CheckpointLatencyTotal),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CheckpointLatencyTotalBase) as usize
+                - ptr as usize
+        },
+        600usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_VOLUME_REFS_INFO_BUFFER),
+            "::",
+            stringify!(CheckpointLatencyTotalBase),
         ),
     );
 }
@@ -177802,6 +182790,116 @@ fn bindgen_test_layout__REFS_DEALLOCATE_RANGES_INPUT_BUFFER() {
 }
 pub type REFS_DEALLOCATE_RANGES_INPUT_BUFFER = _REFS_DEALLOCATE_RANGES_INPUT_BUFFER;
 pub type PREFS_DEALLOCATE_RANGES_INPUT_BUFFER = *mut _REFS_DEALLOCATE_RANGES_INPUT_BUFFER;
+pub mod _REFS_DEALLOCATE_RANGES_ALLOCATOR {
+    pub type Type = ::core::ffi::c_int;
+    pub const REFS_DEALLOCATE_RANGES_ALLOCATOR_NONE: Type = 0;
+    pub const REFS_DEALLOCATE_RANGES_ALLOCATOR_SAA: Type = 1;
+    pub const REFS_DEALLOCATE_RANGES_ALLOCATOR_CAA: Type = 2;
+    pub const REFS_DEALLOCATE_RANGES_ALLOCATOR_MAA: Type = 3;
+}
+pub use self::_REFS_DEALLOCATE_RANGES_ALLOCATOR::Type as REFS_DEALLOCATE_RANGES_ALLOCATOR;
+pub type PREFS_DEALLOCATE_RANGES_ALLOCATOR = *mut _REFS_DEALLOCATE_RANGES_ALLOCATOR::Type;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX {
+    pub RangeCount: ULONG,
+    pub Allocator: REFS_DEALLOCATE_RANGES_ALLOCATOR,
+    pub StreamReserveUpdateCount: LONGLONG,
+    pub OffsetToRanges: ULONG,
+    pub OffsetToLeakCounts: ULONG,
+    pub Reserved: [ULONGLONG; 2usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX() {
+    const UNINIT: ::core::mem::MaybeUninit<_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX>(),
+        40usize,
+        concat!("Size of: ", stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).RangeCount) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(RangeCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Allocator) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(Allocator),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).StreamReserveUpdateCount) as usize
+                - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(StreamReserveUpdateCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).OffsetToRanges) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(OffsetToRanges),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).OffsetToLeakCounts) as usize - ptr as usize
+        },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(OffsetToLeakCounts),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX = _REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX;
+pub type PREFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX = *mut _REFS_DEALLOCATE_RANGES_INPUT_BUFFER_EX;
 #[repr(C)]
 #[derive(Debug, Default, Copy, Clone)]
 pub struct _REFS_REMOVE_HARDLINK_BACKPOINTER {
@@ -178341,6 +183439,1834 @@ fn bindgen_test_layout__REFS_STREAM_SNAPSHOT_QUERY_DELTAS_OUTPUT_BUFFER() {
 }
 pub type REFS_STREAM_SNAPSHOT_QUERY_DELTAS_OUTPUT_BUFFER = _REFS_STREAM_SNAPSHOT_QUERY_DELTAS_OUTPUT_BUFFER;
 pub type PREFS_STREAM_SNAPSHOT_QUERY_DELTAS_OUTPUT_BUFFER = *mut _REFS_STREAM_SNAPSHOT_QUERY_DELTAS_OUTPUT_BUFFER;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _DUPLICATE_CLUSTER_DATA {
+    pub SourceLcn: LONGLONG,
+    pub TargetLcn: LONGLONG,
+    pub TargetFileOffset: LARGE_INTEGER,
+    pub DuplicationLimit: ULONG,
+    pub Reserved: ULONG,
+}
+#[test]
+fn bindgen_test_layout__DUPLICATE_CLUSTER_DATA() {
+    const UNINIT: ::core::mem::MaybeUninit<_DUPLICATE_CLUSTER_DATA> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_DUPLICATE_CLUSTER_DATA>(),
+        32usize,
+        concat!("Size of: ", stringify!(_DUPLICATE_CLUSTER_DATA)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_DUPLICATE_CLUSTER_DATA>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_DUPLICATE_CLUSTER_DATA)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SourceLcn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DUPLICATE_CLUSTER_DATA),
+            "::",
+            stringify!(SourceLcn),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).TargetLcn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DUPLICATE_CLUSTER_DATA),
+            "::",
+            stringify!(TargetLcn),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TargetFileOffset) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DUPLICATE_CLUSTER_DATA),
+            "::",
+            stringify!(TargetFileOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DuplicationLimit) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DUPLICATE_CLUSTER_DATA),
+            "::",
+            stringify!(DuplicationLimit),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_DUPLICATE_CLUSTER_DATA),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _DUPLICATE_CLUSTER_DATA {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type DUPLICATE_CLUSTER_DATA = _DUPLICATE_CLUSTER_DATA;
+pub type PDUPLICATE_CLUSTER_DATA = *mut _DUPLICATE_CLUSTER_DATA;
+pub mod _LCN_WEAK_REFERENCE_STATE {
+    pub type Type = ::core::ffi::c_int;
+    pub const LCN_WEAK_REFERENCE_VALID: Type = 1;
+    pub const LCN_WEAK_REFERENCE_BROKEN: Type = 2;
+    pub const LCN_CHECKSUM_VALID: Type = 4;
+    pub const LCN_IS_VALID: Type = 8;
+    pub const LCN_IS_STREAM_RESERVED: Type = 16;
+    pub const LCN_IS_READ_ONLY: Type = 32;
+}
+pub type LCN_WEAK_REFERENCE_STATE = ULONG;
+pub type PLCN_WEAK_REFERENCE_STATE = *mut LCN_WEAK_REFERENCE_STATE;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_BUFFER {
+    pub Lcn: LONGLONG,
+    pub LengthInClusters: LONGLONG,
+    pub ReferenceCount: ULONG,
+    pub State: LCN_WEAK_REFERENCE_STATE,
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_BUFFER>(),
+        24usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_BUFFER>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Lcn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_BUFFER),
+            "::",
+            stringify!(Lcn),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).LengthInClusters) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_BUFFER),
+            "::",
+            stringify!(LengthInClusters),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ReferenceCount) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_BUFFER),
+            "::",
+            stringify!(ReferenceCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).State) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_BUFFER),
+            "::",
+            stringify!(State),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_BUFFER = _LCN_WEAK_REFERENCE_BUFFER;
+pub type PLCN_WEAK_REFERENCE_BUFFER = *mut _LCN_WEAK_REFERENCE_BUFFER;
+pub type LCN_WEAK_REFERENCE_CREATE_FLAGS = ULONG;
+pub type PLCN_WEAK_REFERENCE_CREATE_FLAGS = *mut LCN_WEAK_REFERENCE_CREATE_FLAGS;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER {
+    pub Offset: LONGLONG,
+    pub Length: LONGLONG,
+    pub Flags: ULONG,
+    pub Reserved: ULONG,
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER>(),
+        24usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Offset) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER),
+            "::",
+            stringify!(Offset),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Length) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER),
+            "::",
+            stringify!(Length),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER = _LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER;
+pub type PLCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER = *mut _LCN_WEAK_REFERENCE_CREATE_INPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_VCN_MAPPING {
+    pub Vcn: LONGLONG,
+    pub Lcn: LONGLONG,
+    pub CountOfRange: LONGLONG,
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_VCN_MAPPING() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_VCN_MAPPING> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_VCN_MAPPING>(),
+        24usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_VCN_MAPPING)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_VCN_MAPPING>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_VCN_MAPPING)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Vcn) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_VCN_MAPPING),
+            "::",
+            stringify!(Vcn),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Lcn) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_VCN_MAPPING),
+            "::",
+            stringify!(Lcn),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CountOfRange) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_VCN_MAPPING),
+            "::",
+            stringify!(CountOfRange),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_VCN_MAPPING = _LCN_WEAK_REFERENCE_VCN_MAPPING;
+pub type PLCN_WEAK_REFERENCE_VCN_MAPPING = *mut _LCN_WEAK_REFERENCE_VCN_MAPPING;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER {
+    pub MappingCount: ULONG,
+    pub VcnLcnMappings: [LCN_WEAK_REFERENCE_VCN_MAPPING; 1usize],
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER>(),
+        32usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).MappingCount) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER),
+            "::",
+            stringify!(MappingCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).VcnLcnMappings) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER),
+            "::",
+            stringify!(VcnLcnMappings),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER = _LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER;
+pub type PLCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER = *mut _LCN_WEAK_REFERENCE_CREATE_OUTPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_RANGE {
+    pub StartOfRange: LONGLONG,
+    pub CountOfRange: LONGLONG,
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_RANGE() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_RANGE> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_RANGE>(),
+        16usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_RANGE)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_RANGE>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_RANGE)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).StartOfRange) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_RANGE),
+            "::",
+            stringify!(StartOfRange),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).CountOfRange) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_RANGE),
+            "::",
+            stringify!(CountOfRange),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_RANGE = _LCN_WEAK_REFERENCE_RANGE;
+pub type PLCN_WEAK_REFERENCE_RANGE = *mut _LCN_WEAK_REFERENCE_RANGE;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER {
+    pub RangeCount: ULONG,
+    pub Ranges: [LCN_WEAK_REFERENCE_RANGE; 1usize],
+}
+#[test]
+fn bindgen_test_layout__LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER>(),
+        24usize,
+        concat!("Size of: ", stringify!(_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).RangeCount) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER),
+            "::",
+            stringify!(RangeCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Ranges) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER),
+            "::",
+            stringify!(Ranges),
+        ),
+    );
+}
+pub type LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER = _LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER;
+pub type PLCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER = *mut _LCN_WEAK_REFERENCE_CLEAR_INPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER {
+    pub Version: ULONG,
+    pub SetDedupState: BOOLEAN,
+    pub Enable: BOOLEAN,
+    pub SetWeakRefState: BOOLEAN,
+    pub EnableWeakRef: BOOLEAN,
+    pub SetDirtyRangeTrackingState: BOOLEAN,
+    pub EnableDirtyRangeTracking: BOOLEAN,
+}
+#[test]
+fn bindgen_test_layout__REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER>(),
+        12usize,
+        concat!("Size of: ", stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SetDedupState) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(SetDedupState),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Enable) as usize - ptr as usize },
+        5usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Enable),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SetWeakRefState) as usize - ptr as usize },
+        6usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(SetWeakRefState),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EnableWeakRef) as usize - ptr as usize },
+        7usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(EnableWeakRef),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SetDirtyRangeTrackingState) as usize
+                - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(SetDirtyRangeTrackingState),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).EnableDirtyRangeTracking) as usize
+                - ptr as usize
+        },
+        9usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(EnableDirtyRangeTracking),
+        ),
+    );
+}
+pub type REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER = _REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER;
+pub type PREFS_VOLUME_DEDUP_INFO_INPUT_BUFFER = *mut _REFS_VOLUME_DEDUP_INFO_INPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER {
+    pub Version: ULONG,
+    pub Enabled: BOOLEAN,
+    pub EnabledWeakRef: BOOLEAN,
+    pub EnabledDirtyRangeTracking: BOOLEAN,
+    pub IsClustered: BOOLEAN,
+    pub VolumeIdHash: ULONG,
+    pub VolumeGuid: GUID,
+    pub VolumeUniqueGuid: GUID,
+}
+#[test]
+fn bindgen_test_layout__REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER>(),
+        44usize,
+        concat!("Size of: ", stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Enabled) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Enabled),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EnabledWeakRef) as usize - ptr as usize },
+        5usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(EnabledWeakRef),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).EnabledDirtyRangeTracking) as usize
+                - ptr as usize
+        },
+        6usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(EnabledDirtyRangeTracking),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).IsClustered) as usize - ptr as usize },
+        7usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(IsClustered),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).VolumeIdHash) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(VolumeIdHash),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).VolumeGuid) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(VolumeGuid),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).VolumeUniqueGuid) as usize - ptr as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(VolumeUniqueGuid),
+        ),
+    );
+}
+pub type REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER = _REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER;
+pub type PREFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER = *mut _REFS_VOLUME_DEDUP_INFO_OUTPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER {
+    pub Version: ULONG,
+    pub TotalSharedLcns: ULONGLONG,
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER>(),
+        16usize,
+        concat!(
+            "Size of: ",
+            stringify!(_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).TotalSharedLcns) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalSharedLcns),
+        ),
+    );
+}
+pub type REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER = _REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER;
+pub type PREFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER = *mut _REFS_QUERY_VOLUME_TOTAL_SHARED_LCNS_OUTPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _SET_CACHED_RUNS_STATE_INPUT_BUFFER {
+    pub Enable: BOOLEAN,
+}
+#[test]
+fn bindgen_test_layout__SET_CACHED_RUNS_STATE_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<_SET_CACHED_RUNS_STATE_INPUT_BUFFER> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_SET_CACHED_RUNS_STATE_INPUT_BUFFER>(),
+        1usize,
+        concat!("Size of: ", stringify!(_SET_CACHED_RUNS_STATE_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_SET_CACHED_RUNS_STATE_INPUT_BUFFER>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_SET_CACHED_RUNS_STATE_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Enable) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SET_CACHED_RUNS_STATE_INPUT_BUFFER),
+            "::",
+            stringify!(Enable),
+        ),
+    );
+}
+pub type SET_CACHED_RUNS_STATE_INPUT_BUFFER = _SET_CACHED_RUNS_STATE_INPUT_BUFFER;
+pub type PSET_CACHED_RUNS_STATE_INPUT_BUFFER = *mut _SET_CACHED_RUNS_STATE_INPUT_BUFFER;
+pub mod _REFS_COMPRESSION_FORMATS {
+    pub type Type = ::core::ffi::c_int;
+    pub const REFS_COMPRESSION_FORMAT_UNCHANGED: Type = 0;
+    pub const REFS_COMPRESSION_FORMAT_UNKNOWN: Type = 1;
+    pub const REFS_COMPRESSION_FORMAT_UNCOMPRESSED: Type = 2;
+    pub const REFS_COMPRESSION_FORMAT_LZ4: Type = 3;
+    pub const REFS_COMPRESSION_FORMAT_ZSTD: Type = 4;
+}
+pub use self::_REFS_COMPRESSION_FORMATS::Type as REFS_COMPRESSION_FORMATS;
+pub type PREFS_COMPRESSION_FORMATS = *mut _REFS_COMPRESSION_FORMATS::Type;
+pub mod _REFS_SET_VOLUME_COMPRESSION_INFO_FLAGS {
+    pub type Type = ::core::ffi::c_int;
+    pub const REFS_SET_VOLUME_COMPRESSION_INFO_FLAG_START_COMPRESSION: Type = 1;
+    pub const REFS_SET_VOLUME_COMPRESSION_INFO_FLAG_STOP_COMPRESSION: Type = 2;
+    pub const REFS_SET_VOLUME_COMPRESSION_INFO_FLAG_GC_ONLY: Type = 4;
+    pub const REFS_SET_VOLUME_COMPRESSION_INFO_FLAG_MAX: Type = 2;
+}
+pub use self::_REFS_SET_VOLUME_COMPRESSION_INFO_FLAGS::Type as REFS_SET_VOLUME_COMPRESSION_INFO_FLAGS;
+pub type PREFS_SET_VOLUME_COMPRESSION_INFO_FLAGS = *mut _REFS_SET_VOLUME_COMPRESSION_INFO_FLAGS::Type;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER {
+    pub Version: ULONG,
+    pub CompressionFormat: REFS_COMPRESSION_FORMATS,
+    pub CompressionLevel: SHORT,
+    pub CompressionChunkSizeBytes: ULONG,
+    pub Flags: ULONG,
+    pub CompressionTuning: ULONG,
+    pub RecompressionTuning: ULONG,
+    pub DecompressionTuning: ULONG,
+    pub Reserved: [ULONG; 6usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER>(),
+        56usize,
+        concat!("Size of: ", stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CompressionFormat) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(CompressionFormat),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CompressionLevel) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(CompressionLevel),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CompressionChunkSizeBytes) as usize
+                - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(CompressionChunkSizeBytes),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CompressionTuning) as usize - ptr as usize
+        },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(CompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).RecompressionTuning) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(RecompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DecompressionTuning) as usize - ptr as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(DecompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER = _REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER;
+pub type PREFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER = *mut _REFS_SET_VOLUME_COMPRESSION_INFO_INPUT_BUFFER;
+pub mod _REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS {
+    pub type Type = ::core::ffi::c_int;
+    pub const REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS_RUNNING: Type = 1;
+    pub const REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS_STOPPED: Type = 2;
+}
+pub use self::_REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS::Type as REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS;
+pub type PREFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS = *mut _REFS_QUERY_VOLUME_COMPRESSION_INFO_FLAGS::Type;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER {
+    pub Version: ULONG,
+    pub DefaultCompressionFormat: REFS_COMPRESSION_FORMATS,
+    pub DefaultCompressionLevel: SHORT,
+    pub DefaultCompressionChunkSizeBytes: ULONG,
+    pub VolumeClusterSizeBytes: ULONG,
+    pub TotalVolumeClusters: ULONGLONG,
+    pub TotalAllocatedClusters: ULONGLONG,
+    pub TotalCompressibleClustersAllocated: ULONGLONG,
+    pub TotalCompressibleClustersInUse: ULONGLONG,
+    pub TotalCompressedClusters: ULONGLONG,
+    pub Flags: ULONG,
+    pub CompressionTuning: ULONG,
+    pub RecompressionTuning: ULONG,
+    pub DecompressionTuning: ULONG,
+    pub Reserved: [ULONG; 9usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER>(),
+        120usize,
+        concat!(
+            "Size of: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DefaultCompressionFormat) as usize
+                - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(DefaultCompressionFormat),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DefaultCompressionLevel) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(DefaultCompressionLevel),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DefaultCompressionChunkSizeBytes) as usize
+                - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(DefaultCompressionChunkSizeBytes),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).VolumeClusterSizeBytes) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(VolumeClusterSizeBytes),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TotalVolumeClusters) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalVolumeClusters),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TotalAllocatedClusters) as usize - ptr as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalAllocatedClusters),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TotalCompressibleClustersAllocated) as usize
+                - ptr as usize
+        },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalCompressibleClustersAllocated),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TotalCompressibleClustersInUse) as usize
+                - ptr as usize
+        },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalCompressibleClustersInUse),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).TotalCompressedClusters) as usize - ptr as usize
+        },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(TotalCompressedClusters),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Flags) as usize - ptr as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Flags),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).CompressionTuning) as usize - ptr as usize
+        },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(CompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).RecompressionTuning) as usize - ptr as usize
+        },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(RecompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).DecompressionTuning) as usize - ptr as usize
+        },
+        76usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(DecompressionTuning),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER = _REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER;
+pub type PREFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER = *mut _REFS_QUERY_VOLUME_COMPRESSION_INFO_OUTPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER {
+    pub Version: ULONG,
+    pub GlobalSecondsToTrack: ULONG,
+    pub MetricsPeriodicitySeconds: ULONG,
+    pub MetricsGenerationsPerContainer: ULONG,
+    pub Reserved: [ULONG; 8usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER>(),
+        48usize,
+        concat!("Size of: ", stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER>(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).GlobalSecondsToTrack) as usize - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(GlobalSecondsToTrack),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MetricsPeriodicitySeconds) as usize
+                - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(MetricsPeriodicitySeconds),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MetricsGenerationsPerContainer) as usize
+                - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(MetricsGenerationsPerContainer),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+pub type REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER = _REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER;
+pub type PREFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER = *mut _REFS_SET_VOLUME_IO_METRICS_INFO_INPUT_BUFFER;
+pub mod _REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE {
+    pub type Type = ::core::ffi::c_int;
+    pub const REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE_PARAMETERS: Type = 1;
+    pub const REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE_METRICS_DATA: Type = 2;
+}
+pub use self::_REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE::Type as REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE;
+pub type PREFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE = *mut _REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE::Type;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER {
+    pub Version: ULONG,
+    pub QueryType: REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE,
+    pub Reserved: [ULONG; 6usize],
+    pub __bindgen_anon_1: _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1 {
+    pub UnusedAlign: ULONGLONG,
+    pub Parameters: _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+    pub MetricsData: _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1 {
+    pub Reserved: [ULONG; 6usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        24usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2 {
+    pub ResumeKeyBlob: [ULONGLONG; 2usize],
+    pub Reserved: [ULONG; 6usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+        >(),
+        40usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+        >(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ResumeKeyBlob) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(ResumeKeyBlob),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1,
+        >(),
+        40usize,
+        concat!(
+            "Size of: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1,
+        >(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).UnusedAlign) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(UnusedAlign),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Parameters) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(Parameters),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).MetricsData) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(MetricsData),
+        ),
+    );
+}
+impl Default for _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER>(),
+        72usize,
+        concat!("Size of: ", stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).QueryType) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(QueryType),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER = _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER;
+pub type PREFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER = *mut _REFS_QUERY_VOLUME_IO_METRICS_INFO_INPUT_BUFFER;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA {
+    pub PlaceHolder: ULONGLONG,
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA() {
+    const UNINIT: ::core::mem::MaybeUninit<_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA>(),
+        8usize,
+        concat!("Size of: ", stringify!(_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).PlaceHolder) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA),
+            "::",
+            stringify!(PlaceHolder),
+        ),
+    );
+}
+pub type REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA = _REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA;
+pub type PREFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA = *mut _REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA;
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER {
+    pub Version: ULONG,
+    pub QueryType: REFS_QUERY_VOLUME_IO_METRICS_INFO_QUERY_TYPE,
+    pub Reserved: [ULONG; 6usize],
+    pub __bindgen_anon_1: _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1,
+}
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub union _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1 {
+    pub UnusedAlign: ULONGLONG,
+    pub Parameters: _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+    pub MetricsData: _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1 {
+    pub GlobalSecondsToTrack: ULONG,
+    pub MetricsPeriodicitySeconds: ULONG,
+    pub MetricsGenerationsPerContainer: ULONG,
+    pub Reserved: [ULONG; 6usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        36usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1,
+        >(),
+        4usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).GlobalSecondsToTrack) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+            "::",
+            stringify!(GlobalSecondsToTrack),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MetricsPeriodicitySeconds) as usize
+                - ptr as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+            "::",
+            stringify!(MetricsPeriodicitySeconds),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).MetricsGenerationsPerContainer) as usize
+                - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+            "::",
+            stringify!(MetricsGenerationsPerContainer),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_1
+            ),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2 {
+    pub EntryCount: ULONG,
+    pub ResumeKeyBlob: [ULONGLONG; 2usize],
+    pub Reserved: [ULONG; 6usize],
+    pub Metrics: [REFS_QUERY_VOLUME_IO_METRICS_METRICS_DATA; 1usize],
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+        >(),
+        56usize,
+        concat!(
+            "Size of: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2,
+        >(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).EntryCount) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(EntryCount),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).ResumeKeyBlob) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(ResumeKeyBlob),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Metrics) as usize - ptr as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(
+                _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1__bindgen_ty_2
+            ),
+            "::",
+            stringify!(Metrics),
+        ),
+    );
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1,
+        >(),
+        56usize,
+        concat!(
+            "Size of: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<
+            _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1,
+        >(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).UnusedAlign) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(UnusedAlign),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Parameters) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(Parameters),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).MetricsData) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1),
+            "::",
+            stringify!(MetricsData),
+        ),
+    );
+}
+impl Default for _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER__bindgen_ty_1 {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+#[test]
+fn bindgen_test_layout__REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER() {
+    const UNINIT: ::core::mem::MaybeUninit<
+        _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER,
+    > = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER>(),
+        88usize,
+        concat!(
+            "Size of: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER>(),
+        8usize,
+        concat!(
+            "Alignment of ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).QueryType) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(QueryType),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Reserved) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER),
+            "::",
+            stringify!(Reserved),
+        ),
+    );
+}
+impl Default for _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER = _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER;
+pub type PREFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER = *mut _REFS_QUERY_VOLUME_IO_METRICS_INFO_OUTPUT_BUFFER;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct _FILE_STORAGE_RESERVE_ID_INFORMATION {
@@ -179348,6 +186274,9 @@ pub struct _SE_EXPORTS {
     pub SeProcTrustWinTcbSid: PSID,
     pub SeTrustedInstallerSid: PSID,
     pub SeDelegateSessionUserImpersonatePrivilege: LUID,
+    pub SeAppSiloSid: PSID,
+    pub SeAppSiloVolumeRootMinimalCapabilitySid: PSID,
+    pub SeAppSiloProfilesRootMinimalCapabilitySid: PSID,
 }
 #[test]
 fn bindgen_test_layout__SE_EXPORTS() {
@@ -179355,7 +186284,7 @@ fn bindgen_test_layout__SE_EXPORTS() {
     let ptr = UNINIT.as_ptr();
     assert_eq!(
         ::core::mem::size_of::<_SE_EXPORTS>(),
-        560usize,
+        584usize,
         concat!("Size of: ", stringify!(_SE_EXPORTS)),
     );
     assert_eq!(
@@ -180197,6 +187126,42 @@ fn bindgen_test_layout__SE_EXPORTS() {
             stringify!(_SE_EXPORTS),
             "::",
             stringify!(SeDelegateSessionUserImpersonatePrivilege),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).SeAppSiloSid) as usize - ptr as usize },
+        560usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SE_EXPORTS),
+            "::",
+            stringify!(SeAppSiloSid),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SeAppSiloVolumeRootMinimalCapabilitySid)
+                as usize - ptr as usize
+        },
+        568usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SE_EXPORTS),
+            "::",
+            stringify!(SeAppSiloVolumeRootMinimalCapabilitySid),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SeAppSiloProfilesRootMinimalCapabilitySid)
+                as usize - ptr as usize
+        },
+        576usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SE_EXPORTS),
+            "::",
+            stringify!(SeAppSiloProfilesRootMinimalCapabilitySid),
         ),
     );
 }
@@ -181293,6 +188258,62 @@ fn bindgen_test_layout__IO_IRP_EXT_TRACK_OFFSET_HEADER() {
 }
 pub type IO_IRP_EXT_TRACK_OFFSET_HEADER = _IO_IRP_EXT_TRACK_OFFSET_HEADER;
 pub type PIO_IRP_EXT_TRACK_OFFSET_HEADER = *mut _IO_IRP_EXT_TRACK_OFFSET_HEADER;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _COPY_INFORMATION {
+    pub SourceFileObject: PFILE_OBJECT,
+    pub SourceFileOffset: LONGLONG,
+}
+#[test]
+fn bindgen_test_layout__COPY_INFORMATION() {
+    const UNINIT: ::core::mem::MaybeUninit<_COPY_INFORMATION> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_COPY_INFORMATION>(),
+        16usize,
+        concat!("Size of: ", stringify!(_COPY_INFORMATION)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_COPY_INFORMATION>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_COPY_INFORMATION)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SourceFileObject) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_COPY_INFORMATION),
+            "::",
+            stringify!(SourceFileObject),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).SourceFileOffset) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_COPY_INFORMATION),
+            "::",
+            stringify!(SourceFileOffset),
+        ),
+    );
+}
+impl Default for _COPY_INFORMATION {
+    fn default() -> Self {
+        let mut s = ::core::mem::MaybeUninit::<Self>::uninit();
+        unsafe {
+            ::core::ptr::write_bytes(s.as_mut_ptr(), 0, 1);
+            s.assume_init()
+        }
+    }
+}
+pub type COPY_INFORMATION = _COPY_INFORMATION;
+pub type PCOPY_INFORMATION = *mut _COPY_INFORMATION;
 pub mod _MMFLUSH_TYPE {
     pub type Type = ::core::ffi::c_int;
     pub const MmFlushForDelete: Type = 0;
@@ -186095,6 +193116,136 @@ fn bindgen_test_layout__CACHE_MANAGER_CALLBACKS() {
 }
 pub type CACHE_MANAGER_CALLBACKS = _CACHE_MANAGER_CALLBACKS;
 pub type PCACHE_MANAGER_CALLBACKS = *mut _CACHE_MANAGER_CALLBACKS;
+pub type PACQUIRE_FOR_LAZY_WRITE_EX = ::core::option::Option<
+    unsafe extern "C" fn(Context: PVOID, InFlags: ULONG, OutFlags: PULONG) -> BOOLEAN,
+>;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _CACHE_MANAGER_CALLBACK_FUNCTIONS {
+    pub AcquireForLazyWriteEx: PACQUIRE_FOR_LAZY_WRITE_EX,
+    pub ReleaseFromLazyWrite: PRELEASE_FROM_LAZY_WRITE,
+    pub AcquireForReadAhead: PACQUIRE_FOR_READ_AHEAD,
+    pub ReleaseFromReadAhead: PRELEASE_FROM_READ_AHEAD,
+}
+#[test]
+fn bindgen_test_layout__CACHE_MANAGER_CALLBACK_FUNCTIONS() {
+    const UNINIT: ::core::mem::MaybeUninit<_CACHE_MANAGER_CALLBACK_FUNCTIONS> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_CACHE_MANAGER_CALLBACK_FUNCTIONS>(),
+        32usize,
+        concat!("Size of: ", stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_CACHE_MANAGER_CALLBACK_FUNCTIONS>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).AcquireForLazyWriteEx) as usize - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS),
+            "::",
+            stringify!(AcquireForLazyWriteEx),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).ReleaseFromLazyWrite) as usize - ptr as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS),
+            "::",
+            stringify!(ReleaseFromLazyWrite),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).AcquireForReadAhead) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS),
+            "::",
+            stringify!(AcquireForReadAhead),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).ReleaseFromReadAhead) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACK_FUNCTIONS),
+            "::",
+            stringify!(ReleaseFromReadAhead),
+        ),
+    );
+}
+pub type CACHE_MANAGER_CALLBACK_FUNCTIONS = _CACHE_MANAGER_CALLBACK_FUNCTIONS;
+pub type PCACHE_MANAGER_CALLBACK_FUNCTIONS = *mut _CACHE_MANAGER_CALLBACK_FUNCTIONS;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _CACHE_MANAGER_CALLBACKS_EX {
+    pub Version: USHORT,
+    pub Size: USHORT,
+    pub Functions: CACHE_MANAGER_CALLBACK_FUNCTIONS,
+}
+#[test]
+fn bindgen_test_layout__CACHE_MANAGER_CALLBACKS_EX() {
+    const UNINIT: ::core::mem::MaybeUninit<_CACHE_MANAGER_CALLBACKS_EX> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_CACHE_MANAGER_CALLBACKS_EX>(),
+        40usize,
+        concat!("Size of: ", stringify!(_CACHE_MANAGER_CALLBACKS_EX)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_CACHE_MANAGER_CALLBACKS_EX>(),
+        8usize,
+        concat!("Alignment of ", stringify!(_CACHE_MANAGER_CALLBACKS_EX)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Version) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACKS_EX),
+            "::",
+            stringify!(Version),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Size) as usize - ptr as usize },
+        2usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACKS_EX),
+            "::",
+            stringify!(Size),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).Functions) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_CACHE_MANAGER_CALLBACKS_EX),
+            "::",
+            stringify!(Functions),
+        ),
+    );
+}
+pub type CACHE_MANAGER_CALLBACKS_EX = _CACHE_MANAGER_CALLBACKS_EX;
+pub type PCACHE_MANAGER_CALLBACKS_EX = *mut _CACHE_MANAGER_CALLBACKS_EX;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _CACHE_UNINITIALIZE_EVENT {
@@ -186742,6 +193893,209 @@ fn bindgen_test_layout__SEC_CHANNEL_BINDINGS() {
 }
 pub type SEC_CHANNEL_BINDINGS = _SEC_CHANNEL_BINDINGS;
 pub type PSEC_CHANNEL_BINDINGS = *mut _SEC_CHANNEL_BINDINGS;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _SEC_CHANNEL_BINDINGS_EX {
+    pub magicNumber: ::core::ffi::c_ulong,
+    pub flags: ::core::ffi::c_ulong,
+    pub cbHeaderLength: ::core::ffi::c_ulong,
+    pub cbStructureLength: ::core::ffi::c_ulong,
+    pub dwInitiatorAddrType: ::core::ffi::c_ulong,
+    pub cbInitiatorLength: ::core::ffi::c_ulong,
+    pub dwInitiatorOffset: ::core::ffi::c_ulong,
+    pub dwAcceptorAddrType: ::core::ffi::c_ulong,
+    pub cbAcceptorLength: ::core::ffi::c_ulong,
+    pub dwAcceptorOffset: ::core::ffi::c_ulong,
+    pub cbApplicationDataLength: ::core::ffi::c_ulong,
+    pub dwApplicationDataOffset: ::core::ffi::c_ulong,
+}
+#[test]
+fn bindgen_test_layout__SEC_CHANNEL_BINDINGS_EX() {
+    const UNINIT: ::core::mem::MaybeUninit<_SEC_CHANNEL_BINDINGS_EX> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_SEC_CHANNEL_BINDINGS_EX>(),
+        48usize,
+        concat!("Size of: ", stringify!(_SEC_CHANNEL_BINDINGS_EX)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_SEC_CHANNEL_BINDINGS_EX>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_SEC_CHANNEL_BINDINGS_EX)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).magicNumber) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(magicNumber),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).flags) as usize - ptr as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(flags),
+        ),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).cbHeaderLength) as usize - ptr as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(cbHeaderLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).cbStructureLength) as usize - ptr as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(cbStructureLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).dwInitiatorAddrType) as usize - ptr as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(dwInitiatorAddrType),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).cbInitiatorLength) as usize - ptr as usize
+        },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(cbInitiatorLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).dwInitiatorOffset) as usize - ptr as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(dwInitiatorOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).dwAcceptorAddrType) as usize - ptr as usize
+        },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(dwAcceptorAddrType),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).cbAcceptorLength) as usize - ptr as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(cbAcceptorLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).dwAcceptorOffset) as usize - ptr as usize
+        },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(dwAcceptorOffset),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).cbApplicationDataLength) as usize - ptr as usize
+        },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(cbApplicationDataLength),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).dwApplicationDataOffset) as usize - ptr as usize
+        },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_EX),
+            "::",
+            stringify!(dwApplicationDataOffset),
+        ),
+    );
+}
+pub type SEC_CHANNEL_BINDINGS_EX = _SEC_CHANNEL_BINDINGS_EX;
+pub type PSEC_CHANNEL_BINDINGS_EX = *mut _SEC_CHANNEL_BINDINGS_EX;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _SEC_CHANNEL_BINDINGS_RESULT {
+    pub flags: ::core::ffi::c_ulong,
+}
+#[test]
+fn bindgen_test_layout__SEC_CHANNEL_BINDINGS_RESULT() {
+    const UNINIT: ::core::mem::MaybeUninit<_SEC_CHANNEL_BINDINGS_RESULT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_SEC_CHANNEL_BINDINGS_RESULT>(),
+        4usize,
+        concat!("Size of: ", stringify!(_SEC_CHANNEL_BINDINGS_RESULT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_SEC_CHANNEL_BINDINGS_RESULT>(),
+        4usize,
+        concat!("Alignment of ", stringify!(_SEC_CHANNEL_BINDINGS_RESULT)),
+    );
+    assert_eq!(
+        unsafe { ::core::ptr::addr_of!((*ptr).flags) as usize - ptr as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CHANNEL_BINDINGS_RESULT),
+            "::",
+            stringify!(flags),
+        ),
+    );
+}
+pub type SEC_CHANNEL_BINDINGS_RESULT = _SEC_CHANNEL_BINDINGS_RESULT;
+pub type PSEC_CHANNEL_BINDINGS_RESULT = *mut _SEC_CHANNEL_BINDINGS_RESULT;
 pub mod _SEC_APPLICATION_PROTOCOL_NEGOTIATION_EXT {
     pub type Type = ::core::ffi::c_int;
     pub const SecApplicationProtocolNegotiationExt_None: Type = 0;
@@ -187171,6 +194525,55 @@ fn bindgen_test_layout__SEC_FLAGS() {
 }
 pub type SEC_FLAGS = _SEC_FLAGS;
 pub type PSEC_FLAGS = *mut _SEC_FLAGS;
+#[repr(C)]
+#[derive(Debug, Default, Copy, Clone)]
+pub struct _SEC_CERTIFICATE_REQUEST_CONTEXT {
+    pub cbCertificateRequestContext: ::core::ffi::c_uchar,
+    pub rgCertificateRequestContext: [::core::ffi::c_uchar; 1usize],
+}
+#[test]
+fn bindgen_test_layout__SEC_CERTIFICATE_REQUEST_CONTEXT() {
+    const UNINIT: ::core::mem::MaybeUninit<_SEC_CERTIFICATE_REQUEST_CONTEXT> = ::core::mem::MaybeUninit::uninit();
+    let ptr = UNINIT.as_ptr();
+    assert_eq!(
+        ::core::mem::size_of::<_SEC_CERTIFICATE_REQUEST_CONTEXT>(),
+        2usize,
+        concat!("Size of: ", stringify!(_SEC_CERTIFICATE_REQUEST_CONTEXT)),
+    );
+    assert_eq!(
+        ::core::mem::align_of::<_SEC_CERTIFICATE_REQUEST_CONTEXT>(),
+        1usize,
+        concat!("Alignment of ", stringify!(_SEC_CERTIFICATE_REQUEST_CONTEXT)),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).cbCertificateRequestContext) as usize
+                - ptr as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CERTIFICATE_REQUEST_CONTEXT),
+            "::",
+            stringify!(cbCertificateRequestContext),
+        ),
+    );
+    assert_eq!(
+        unsafe {
+            ::core::ptr::addr_of!((*ptr).rgCertificateRequestContext) as usize
+                - ptr as usize
+        },
+        1usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(_SEC_CERTIFICATE_REQUEST_CONTEXT),
+            "::",
+            stringify!(rgCertificateRequestContext),
+        ),
+    );
+}
+pub type SEC_CERTIFICATE_REQUEST_CONTEXT = _SEC_CERTIFICATE_REQUEST_CONTEXT;
+pub type PSEC_CERTIFICATE_REQUEST_CONTEXT = *mut _SEC_CERTIFICATE_REQUEST_CONTEXT;
 pub mod _SEC_TRAFFIC_SECRET_TYPE {
     pub type Type = ::core::ffi::c_int;
     pub const SecTrafficSecret_None: Type = 0;
